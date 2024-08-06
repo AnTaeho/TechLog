@@ -1,0 +1,30 @@
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/techLog
+    username: root
+    password: an902318
+#
+#  redis:
+#    host: localhost
+#    port: 6379
+#    password: password
+
+  jpa:
+    show-sql: true
+    properties:
+      hibernate:
+        use_sql_comments: true
+        format_sql: true
+    hibernate:
+      ddl-auto: create
+
+logging:
+  level:
+    org.hibernate.type.descriptor.sql: trace
+    org.springframework.web.servlet.handler.HandlerMappingIntrospector: error
+
+server:
+  tomcat:
+    basedir: tomcat
+
+environment: local

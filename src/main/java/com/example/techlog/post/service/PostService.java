@@ -56,6 +56,7 @@ public class PostService {
 
     private PostSimpleResponse toSimpleResponse(Post post) {
         return new PostSimpleResponse(
+                post.getId(),
                 post.getTitle(),
                 post.getDescription(),
                 post.getWriter().getName(),

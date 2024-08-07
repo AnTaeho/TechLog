@@ -28,7 +28,7 @@ public class Post extends BaseEntity {
     private String title;
     private String description;
 
-    @Lob
+    @Column(length = 10000)
     private String content;
 
     private boolean isDeleted;

@@ -1,8 +1,8 @@
 package com.example.techlog.user;
 
-import com.example.techlog.common.CommonResponse;
-import com.example.techlog.common.TokenResponse;
-import com.example.techlog.jwt.service.JwtService;
+import com.example.techlog.common.dto.CommonResponse;
+import com.example.techlog.common.dto.TokenResponse;
+import com.example.techlog.auth.service.JwtService;
 import com.example.techlog.user.dto.JoinRequest;
 import com.example.techlog.user.dto.LoginRequest;
 import com.example.techlog.user.dto.UserEmailVO;

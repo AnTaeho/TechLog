@@ -1,4 +1,4 @@
-package com.example.techlog.jwt.login;
+package com.example.techlog.auth.login;
 
 import com.example.techlog.user.domain.User;
 import com.example.techlog.user.repository.UserRepository;

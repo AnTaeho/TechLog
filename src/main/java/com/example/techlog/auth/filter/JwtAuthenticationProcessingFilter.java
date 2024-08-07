@@ -1,6 +1,6 @@
-package com.example.techlog.jwt.filter;
+package com.example.techlog.auth.filter;
 
-import com.example.techlog.jwt.service.JwtService;
+import com.example.techlog.auth.service.JwtService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

@@ -1,4 +1,4 @@
-package com.example.techlog.common;
+package com.example.techlog.common.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 

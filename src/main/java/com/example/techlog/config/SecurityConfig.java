@@ -1,10 +1,10 @@
 package com.example.techlog.config;
 
-import com.example.techlog.jwt.error.JwtAccessDeniedHandler;
-import com.example.techlog.jwt.error.JwtAuthenticationEntryPoint;
-import com.example.techlog.jwt.filter.JwtAuthenticationProcessingFilter;
-import com.example.techlog.jwt.login.LoginService;
-import com.example.techlog.jwt.service.JwtService;
+import com.example.techlog.auth.error.JwtAccessDeniedHandler;
+import com.example.techlog.auth.error.JwtAuthenticationEntryPoint;
+import com.example.techlog.auth.filter.JwtAuthenticationProcessingFilter;
+import com.example.techlog.auth.login.LoginService;
+import com.example.techlog.auth.service.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

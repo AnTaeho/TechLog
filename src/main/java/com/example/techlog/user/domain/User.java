@@ -10,6 +10,7 @@ import jakarta.persistence.Id;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Entity
 @Getter
@@ -33,5 +34,9 @@ public class User {
         this.password = password;
         this.name = name;
         this.role = UserRole.USER;
+    }
+
+    public void encodePassword(PasswordEncoder encoder) {
+        this.password = encoder.encode(password);
     }
 }

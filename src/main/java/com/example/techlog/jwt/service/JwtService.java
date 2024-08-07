@@ -6,7 +6,7 @@ import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.example.techlog.jwt.login.LoginService;
 import com.example.techlog.user.domain.User;
-import com.example.techlog.user.dto.TokenResponse;
+import com.example.techlog.common.TokenResponse;
 import com.example.techlog.user.repository.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Date;

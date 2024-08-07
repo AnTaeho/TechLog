@@ -1,4 +1,4 @@
-package com.example.techlog.user.dto;
+package com.example.techlog.common;
 
 public record TokenResponse(
         String accessToken,

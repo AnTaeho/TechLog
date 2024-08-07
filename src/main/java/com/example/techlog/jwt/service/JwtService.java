@@ -12,7 +12,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import java.util.Date;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.mapping.NullAuthoritiesMapper;
@@ -39,7 +38,6 @@ public class JwtService {
     private Long refreshTokenExpirationPeriod;
 
     private final UserRepository userRepository;
-    private final ApplicationEventPublisher publisher;
     private final LoginService loginService;
 
     public TokenResponse toTokenResponse(String email) {
@@ -47,7 +45,6 @@ public class JwtService {
                 .orElseThrow(() -> new IllegalArgumentException("3번 후보"));
         String accessToken = makeAccessToken(user.getEmail());
         String refreshToken = makeRefreshToken();
-//        publisher.publishEvent(new RefreshTokenEvent(user.getEmail(), refreshToken));
         return new TokenResponse(accessToken, refreshToken);
     }
 
@@ -119,12 +116,4 @@ public class JwtService {
         }
     }
 
-    public String createTokenForOAuth2(String email) {
-        Date date = new Date();
-        return JWT.create()
-                .withSubject("sign up")
-                .withExpiresAt(new Date(date.getTime() + 3600000))
-                .withClaim(EMAIL_CLAIM, email)
-                .sign(Algorithm.HMAC512(secretKey));
-    }
 }

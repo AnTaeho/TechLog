@@ -17,6 +17,9 @@ configurations {
 	compileOnly {
 		extendsFrom annotationProcessor
 	}
+    configureEach {
+		exclude group: 'commons-logging', module: 'commons-logging'
+	}
 }
 
 repositories {
@@ -42,6 +45,8 @@ dependencies {
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
 	implementation 'io.awspring.cloud:spring-cloud-starter-aws:2.4.4'
+	implementation 'com.amazonaws:aws-java-sdk-s3:1.12.765'
+	implementation 'javax.xml.bind:jaxb-api:2.4.0-b180830.0359'
 }
 
 tasks.named('test') {

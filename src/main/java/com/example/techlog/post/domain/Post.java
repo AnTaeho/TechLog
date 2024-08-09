@@ -53,6 +53,7 @@ public class Post extends BaseEntity {
         this.title = postUpdateRequest.title();
         this.description = postUpdateRequest.description();
         this.content = postUpdateRequest.content();
+        this.thumbnail = postUpdateRequest.thumbnail();
     }
 
     public void delete() {

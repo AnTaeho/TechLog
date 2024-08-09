@@ -27,7 +27,7 @@ public class S3ImageService {
     @Value("${cloud.aws.region.static}")
     private String region;
 
-    public UploadResponse upload(MultipartFile file, String directoryName) throws IOException {
+    public UploadResponse upload(MultipartFile file) throws IOException {
         String fileName = file.getOriginalFilename();
         if (fileName == null || fileName.isEmpty()) {
             throw new IllegalArgumentException("올바른 파일 이름 형식이 아닙니다.");
@@ -35,7 +35,7 @@ public class S3ImageService {
 
         validateExtension(fileName);
 
-        String createFileName = createFileName(fileName, directoryName);
+        String createFileName = createFileName(fileName);
         ObjectMetadata objMeta = new ObjectMetadata();
         byte[] bytes = IOUtils.toByteArray(file.getInputStream());
         objMeta.setContentLength(bytes.length);
@@ -45,7 +45,7 @@ public class S3ImageService {
                 new PutObjectRequest(bucket, createFileName, byteArrayIs, objMeta)
                         .withCannedAcl(CannedAccessControlList.PublicRead)
         );
-
+        System.out.println("업로드 드간다");
         return new UploadResponse(
                 amazonS3Client.getUrl(bucket, createFileName).toString()
         );
@@ -56,8 +56,8 @@ public class S3ImageService {
         amazonS3Client.deleteObject(new DeleteObjectRequest(bucket, objectKey));
     }
 
-    private String createFileName(String fileName, String directoryName) {
-        return directoryName + "/" + UUID.randomUUID() + fileName;
+    private String createFileName(String fileName) {
+        return "image/" + UUID.randomUUID() + fileName;
     }
 
     private void validateExtension(String fileName) {

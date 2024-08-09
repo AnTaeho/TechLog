@@ -50,6 +50,7 @@ public class SecurityConfig {
                         authorize -> authorize
                                 .requestMatchers("/users/**").permitAll()
                                 .requestMatchers("/posts/**").permitAll()
+                                .requestMatchers("/images/**").permitAll()
                                 .requestMatchers("/login/**").permitAll()
                                 .requestMatchers("/error/**").permitAll()
                                 .requestMatchers("/").permitAll()

@@ -31,16 +31,19 @@ public class Post extends BaseEntity {
     @Column(length = 10000)
     private String content;
 
+    private String thumbnail;
+
     private boolean isDeleted;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User writer;
 
-    public Post(String title, String description, String content, User user) {
+    public Post(String title, String description, String content, String thumbnail, User user) {
         this.title = title;
         this.description = description;
         this.content = content;
+        this.thumbnail = thumbnail;
         this.isDeleted = false;
         this.writer = user;
         user.addPost(this);

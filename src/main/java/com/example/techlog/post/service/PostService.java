@@ -29,6 +29,7 @@ public class PostService {
                 postWriteRequest.title(),
                 postWriteRequest.description(),
                 postWriteRequest.content(),
+                postWriteRequest.thumbnail(),
                 getUser(email)
         );
         Post savedPost = postRepository.save(post);
@@ -38,8 +39,10 @@ public class PostService {
     public PostDetailResponse getPostDetail(Long postId) {
         Post post = getPostWithWriter(postId);
         return new PostDetailResponse(
+                postId,
                 post.getTitle(),
                 post.getContent(),
+                post.getThumbnail(),
                 post.getWriter().getName(),
                 post.getWriter().getId(),
                 post.getCreatedDate().toLocalDate()
@@ -59,6 +62,7 @@ public class PostService {
                 post.getId(),
                 post.getTitle(),
                 post.getDescription(),
+                post.getThumbnail(),
                 post.getWriter().getName(),
                 post.getCreatedDate().toLocalDate()
         );

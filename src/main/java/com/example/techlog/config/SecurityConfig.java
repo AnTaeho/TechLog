@@ -8,6 +8,7 @@ import com.example.techlog.auth.service.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -49,9 +50,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(
                         authorize -> authorize
                                 .requestMatchers("/users/**").permitAll()
-                                .requestMatchers("/posts/**").permitAll()
-                                .requestMatchers("/images/**").permitAll()
-                                .requestMatchers("/login/**").permitAll()
+                                .requestMatchers(HttpMethod.GET,"/posts/**").permitAll()
                                 .requestMatchers("/error/**").permitAll()
                                 .requestMatchers("/").permitAll()
                                 .anyRequest().authenticated()

@@ -3,7 +3,6 @@ package com.example.techlog.auth.service;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
-import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.example.techlog.auth.login.LoginService;
 import com.example.techlog.user.domain.User;
 import com.example.techlog.common.dto.TokenResponse;
@@ -109,8 +108,6 @@ public class JwtService {
             JWT.require(Algorithm.HMAC512(secretKey))
                     .build().verify(headerToken);
             return true;
-        } catch (TokenExpiredException e) {
-            throw new IllegalArgumentException("토큰이 만료 되었습니다.");
         } catch (JWTVerificationException e) {
             return false;
         }

@@ -4,6 +4,7 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.example.techlog.auth.login.LoginService;
+import com.example.techlog.event.RedisEvent;
 import com.example.techlog.user.domain.User;
 import com.example.techlog.common.dto.TokenResponse;
 import com.example.techlog.user.repository.UserRepository;
@@ -11,6 +12,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import java.util.Date;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.mapping.NullAuthoritiesMapper;
@@ -38,12 +40,14 @@ public class JwtService {
 
     private final UserRepository userRepository;
     private final LoginService loginService;
+    private final ApplicationEventPublisher publisher;
 
     public TokenResponse toTokenResponse(String email) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("3번 후보"));
         String accessToken = makeAccessToken(user.getEmail());
         String refreshToken = makeRefreshToken();
+        publisher.publishEvent(new RedisEvent(user.getEmail(), refreshToken));
         return new TokenResponse(accessToken, refreshToken);
     }
 

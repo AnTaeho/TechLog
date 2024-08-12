@@ -3,11 +3,6 @@ spring:
     url: jdbc:mysql://localhost:3306/techLog
     username: root
     password: an902318
-#
-#  redis:
-#    host: localhost
-#    port: 6379
-#    password: password
 
   jpa:
     show-sql: true

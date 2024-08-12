@@ -1,5 +1,7 @@
 package com.example.techlog.user.service;
 
+import com.example.techlog.redis.RefreshToken;
+import com.example.techlog.redis.RefreshTokenRepository;
 import com.example.techlog.user.domain.User;
 import com.example.techlog.user.dto.JoinRequest;
 import com.example.techlog.user.dto.LoginRequest;
@@ -14,11 +16,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class UserService {
 
     private final UserRepository userRepository;
+    private final RefreshTokenRepository refreshTokenRepository;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
 
@@ -36,4 +38,17 @@ public class UserService {
         return new UserEmailVO(authentication.getName());
     }
 
+    @Transactional
+    public UserEmailVO reIssueToken(String refreshToken) {
+        RefreshToken byToken = refreshTokenRepository.findByToken(refreshToken)
+                .orElseThrow(() -> new IllegalArgumentException("그런 토큰은 없는디요."));
+        refreshTokenRepository.delete(byToken);
+        return new UserEmailVO(byToken.getEmail());
+    }
+
+    @Transactional
+    public void logout(String email) {
+        System.out.println(email);
+        refreshTokenRepository.deleteById(email);
+    }
 }

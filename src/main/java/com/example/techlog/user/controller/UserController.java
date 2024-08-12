@@ -1,4 +1,4 @@
-package com.example.techlog.user;
+package com.example.techlog.user.controller;
 
 import com.example.techlog.common.dto.CommonResponse;
 import com.example.techlog.common.dto.EmptyDto;
@@ -14,6 +14,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -37,8 +38,16 @@ public class UserController {
 
     @PostMapping("/logout")
     public CommonResponse<EmptyDto> logout() {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        userService.logout(email);
         SecurityContextHolder.clearContext();
         return new CommonResponse<>(new EmptyDto());
+    }
+
+    @PostMapping("/refresh-token")
+    public CommonResponse<TokenResponse> reIssueToken(@RequestParam("refreshToken") String refreshToken) {
+        UserEmailVO email =userService.reIssueToken(refreshToken);
+        return new CommonResponse<>(jwtService.toTokenResponse(email.value()));
     }
 
 }

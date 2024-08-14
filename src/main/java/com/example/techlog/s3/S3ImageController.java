@@ -31,6 +31,6 @@ public class S3ImageController {
     @DeleteMapping
     public CommonResponse<EmptyDto> deleteImage(@RequestParam("fileUrl") String fileUrl) {
         s3ImageService.delete(fileUrl);
-        return new CommonResponse<>(new EmptyDto());
+        return CommonResponse.EMPTY;
     }
 }

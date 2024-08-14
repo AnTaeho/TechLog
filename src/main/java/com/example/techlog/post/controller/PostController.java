@@ -8,7 +8,6 @@ import com.example.techlog.post.dto.PostListResponse;
 import com.example.techlog.post.dto.PostUpdateRequest;
 import com.example.techlog.post.dto.PostWriteRequest;
 import com.example.techlog.post.service.PostService;
-import com.example.techlog.s3.S3ImageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -50,7 +49,7 @@ public class PostController {
     @DeleteMapping("/{postId}")
     public CommonResponse<EmptyDto> deletePost(@PathVariable("postId") Long postId) {
         postService.deletePost(postId);
-        return new CommonResponse<>(new EmptyDto());
+        return CommonResponse.EMPTY;
     }
 
     private String getUserName() {

@@ -41,10 +41,10 @@ public class UserController {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         userService.logout(email);
         SecurityContextHolder.clearContext();
-        return new CommonResponse<>(new EmptyDto());
+        return CommonResponse.EMPTY;
     }
 
-    @PostMapping("/refresh-token")
+    @PostMapping("/reissue")
     public CommonResponse<TokenResponse> reIssueToken(@RequestParam("refreshToken") String refreshToken) {
         UserEmailVO email =userService.reIssueToken(refreshToken);
         return new CommonResponse<>(jwtService.toTokenResponse(email.value()));

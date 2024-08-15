@@ -3,15 +3,15 @@ package com.example.techlog.post.service;
 import com.example.techlog.post.domain.Post;
 import com.example.techlog.post.dto.PostDetailResponse;
 import com.example.techlog.post.dto.PostIdResponse;
-import com.example.techlog.post.dto.PostListResponse;
 import com.example.techlog.post.dto.PostSimpleResponse;
 import com.example.techlog.post.dto.PostUpdateRequest;
 import com.example.techlog.post.dto.PostWriteRequest;
 import com.example.techlog.post.repository.PostRepository;
 import com.example.techlog.user.domain.User;
 import com.example.techlog.user.repository.UserRepository;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -49,23 +49,8 @@ public class PostService {
         );
     }
 
-    public PostListResponse findAllPost() {
-        List<PostSimpleResponse> list = postRepository.getAllPostWithWriter().stream()
-                .filter(it -> !it.isDeleted())
-                .map(this::toSimpleResponse)
-                .toList();
-        return new PostListResponse(list);
-    }
-
-    private PostSimpleResponse toSimpleResponse(Post post) {
-        return new PostSimpleResponse(
-                post.getId(),
-                post.getTitle(),
-                post.getDescription(),
-                post.getThumbnail(),
-                post.getWriter().getName(),
-                post.getCreatedDate().toLocalDate()
-        );
+    public Page<PostSimpleResponse> findAllPost(Pageable pageable) {
+        return postRepository.getPostPageWithWriterPage(pageable);
     }
 
     @Transactional

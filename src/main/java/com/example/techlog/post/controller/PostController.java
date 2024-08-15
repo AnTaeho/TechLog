@@ -2,13 +2,17 @@ package com.example.techlog.post.controller;
 
 import com.example.techlog.common.dto.CommonResponse;
 import com.example.techlog.common.dto.EmptyDto;
+import com.example.techlog.common.dto.PageInfo;
 import com.example.techlog.post.dto.PostDetailResponse;
 import com.example.techlog.post.dto.PostIdResponse;
 import com.example.techlog.post.dto.PostListResponse;
+import com.example.techlog.post.dto.PostSimpleResponse;
 import com.example.techlog.post.dto.PostUpdateRequest;
 import com.example.techlog.post.dto.PostWriteRequest;
 import com.example.techlog.post.service.PostService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -37,8 +41,12 @@ public class PostController {
     }
 
     @GetMapping
-    public CommonResponse<PostListResponse> getAllPost() {
-        return new CommonResponse<>(postService.findAllPost());
+    public CommonResponse<PostListResponse> getAllPost(Pageable pageable) {
+        Page<PostSimpleResponse> allPost = postService.findAllPost(pageable);
+        return new CommonResponse<>(
+                new PostListResponse(allPost.getContent()),
+                PageInfo.of(allPost)
+        );
     }
 
     @PatchMapping("/{postId}")

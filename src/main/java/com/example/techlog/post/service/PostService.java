@@ -84,6 +84,7 @@ public class PostService {
     @Transactional
     public void deletePost(Long postId) {
         Post post = getPost(postId);
+        postTagRepository.deleteAllByPost(post);
         post.delete();
     }
 

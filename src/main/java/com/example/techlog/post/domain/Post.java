@@ -2,6 +2,7 @@ package com.example.techlog.post.domain;
 
 import com.example.techlog.common.entity.BaseEntity;
 import com.example.techlog.post.dto.PostUpdateRequest;
+import com.example.techlog.tag.domain.PostTag;
 import com.example.techlog.user.domain.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -11,6 +12,9 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -38,6 +42,9 @@ public class Post extends BaseEntity {
     @JoinColumn(name = "user_id")
     private User writer;
 
+    @OneToMany(mappedBy = "post")
+    private final List<PostTag> postTags = new ArrayList<>();
+
     public Post(String title, String description, String content, String thumbnail, User user) {
         this.title = title;
         this.description = description;
@@ -57,5 +64,9 @@ public class Post extends BaseEntity {
 
     public void delete() {
         this.isDeleted = true;
+    }
+
+    public void add(PostTag postTag) {
+        this.postTags.add(postTag);
     }
 }

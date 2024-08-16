@@ -7,8 +7,15 @@ import com.example.techlog.post.dto.PostSimpleResponse;
 import com.example.techlog.post.dto.PostUpdateRequest;
 import com.example.techlog.post.dto.PostWriteRequest;
 import com.example.techlog.post.repository.PostRepository;
+import com.example.techlog.tag.domain.PostTag;
+import com.example.techlog.tag.domain.Tag;
+import com.example.techlog.tag.dto.TagDto;
+import com.example.techlog.tag.repository.PostTagRepository;
+import com.example.techlog.tag.repository.TagRepository;
 import com.example.techlog.user.domain.User;
 import com.example.techlog.user.repository.UserRepository;
+import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,18 +29,32 @@ public class PostService {
 
     private final UserRepository userRepository;
     private final PostRepository postRepository;
+    private final TagRepository tagRepository;
+    private final PostTagRepository postTagRepository;
 
     @Transactional
     public PostIdResponse writePost(PostWriteRequest postWriteRequest, String email) {
+        User user = getUser(email);
         Post post = new Post(
                 postWriteRequest.title(),
                 postWriteRequest.description(),
                 postWriteRequest.content(),
                 postWriteRequest.thumbnail(),
-                getUser(email)
+                user
         );
+
         Post savedPost = postRepository.save(post);
+        processingTags(postWriteRequest.tags(), user, savedPost);
         return new PostIdResponse(savedPost.getId());
+    }
+
+    private void processingTags(List<TagDto> tags, User user, Post post) {
+        for (TagDto dto : tags) {
+            Optional<Tag> byContent = tagRepository.findByContent(dto.content());
+            System.out.println(dto.content());
+            Tag tag = byContent.orElseGet(() -> tagRepository.save(new Tag(dto.content(), user)));
+            postTagRepository.save(new PostTag(post, tag));
+        }
     }
 
     public PostDetailResponse getPostDetail(Long postId) {

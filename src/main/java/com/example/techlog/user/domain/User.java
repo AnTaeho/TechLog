@@ -2,6 +2,7 @@ package com.example.techlog.user.domain;
 
 import com.example.techlog.common.entity.BaseEntity;
 import com.example.techlog.post.domain.Post;
+import com.example.techlog.tag.domain.Tag;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -39,6 +40,9 @@ public class User extends BaseEntity {
     @OneToMany(mappedBy = "writer", cascade = CascadeType.REMOVE)
     private final List<Post> posts = new ArrayList<>();
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
+    private final List<Tag> tags = new ArrayList<>();
+
     public User(String email, String password, String name) {
         this.email = email;
         this.password = password;
@@ -53,5 +57,9 @@ public class User extends BaseEntity {
 
     public void addPost(Post post) {
         this.posts.add(post);
+    }
+
+    public void addTag(Tag tag) {
+        this.tags.add(tag);
     }
 }

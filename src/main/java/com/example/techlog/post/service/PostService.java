@@ -68,7 +68,6 @@ public class PostService {
 
     private User getUser(String email) {
         return userRepository.findByEmail(email)
-                .filter(it -> !it.isDeleted())
                 .orElseThrow(() -> new IllegalArgumentException("해당 유저를 찾을 수 없습니다."));
     }
 

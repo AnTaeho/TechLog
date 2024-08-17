@@ -10,6 +10,9 @@ import com.example.techlog.post.dto.PostSimpleResponse;
 import com.example.techlog.post.dto.PostUpdateRequest;
 import com.example.techlog.post.dto.PostWriteRequest;
 import com.example.techlog.post.service.PostService;
+import com.example.techlog.tag.dto.TagDto;
+import com.example.techlog.tag.service.TagService;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -29,6 +32,17 @@ import org.springframework.web.bind.annotation.RestController;
 public class PostController {
 
     private final PostService postService;
+    private final TagService tagService;
+
+    @GetMapping("/tag")
+    public CommonResponse<PostListResponse> searchByTag(@RequestBody TagDto tagDto, Pageable pageable) {
+        List<Long> ids = tagService.searchByTag(tagDto);
+        Page<PostSimpleResponse> result = postService.findAllByIds(ids, pageable);
+        return new CommonResponse<>(
+                new PostListResponse(result.getContent()),
+                PageInfo.of(result)
+        );
+    }
 
     @PostMapping
     public CommonResponse<PostIdResponse> writePost(@RequestBody PostWriteRequest postWriteRequest) {

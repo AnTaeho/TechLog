@@ -8,7 +8,7 @@ import org.springframework.data.repository.query.Param;
 
 public interface TagRepository extends JpaRepository<Tag, Long> {
 
-    @Query("select t from Tag t where t.content = :content")
+    @Query("select t from Tag t where t.content = :content order by t.id limit 1")
     Optional<Tag> findByContent(@Param("content") String content);
 
 }

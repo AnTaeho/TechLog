@@ -40,6 +40,23 @@ public class PostRepositoryCustomImpl implements PostRepositoryCustom {
         return new PageImpl<>(results, pageable, count);
     }
 
+    @Override
+    public Page<PostSimpleResponse> searchByIds(List<Long> ids, Pageable pageable) {
+        JPAQuery<Post> query = queryFactory.selectFrom(post)
+                .where(post.id.in(ids));
+
+        long size = query.fetch().size();
+
+        List<PostSimpleResponse> result = query.orderBy(post.id.desc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize()).stream()
+                .map(this::toSimpleResponse)
+                .toList();
+
+        return new PageImpl<>(result, pageable, size);
+
+    }
+
     private PostSimpleResponse toSimpleResponse(Post post) {
         return new PostSimpleResponse(
                 post.getId(),

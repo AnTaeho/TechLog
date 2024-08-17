@@ -14,10 +14,12 @@ import com.example.techlog.tag.repository.PostTagRepository;
 import com.example.techlog.tag.repository.TagRepository;
 import com.example.techlog.user.domain.User;
 import com.example.techlog.user.repository.UserRepository;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -105,4 +107,11 @@ public class PostService {
                 .orElseThrow(() -> new IllegalArgumentException("해당 포스트를 찾을 수 없습니다."));
     }
 
+    public Page<PostSimpleResponse> findAllByIds(List<Long> ids, Pageable pageable) {
+        if (ids.isEmpty()) {
+            return new PageImpl<>(new ArrayList<>(), pageable, 0L);
+        }
+
+        return postRepository.searchByIds(ids, pageable);
+    }
 }

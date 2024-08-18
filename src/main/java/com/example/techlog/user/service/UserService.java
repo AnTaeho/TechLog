@@ -26,10 +26,17 @@ public class UserService {
 
     @Transactional
     public UserIdResponse join(JoinRequest joinRequest) {
+        checkEmail(joinRequest);
         User user = new User(joinRequest.email(), joinRequest.password(), joinRequest.name());
         user.encodePassword(passwordEncoder);
         User savedUser = userRepository.save(user);
         return new UserIdResponse(savedUser.getId());
+    }
+
+    private void checkEmail(JoinRequest joinRequest) {
+        if (userRepository.existsByEmail(joinRequest.email())) {
+            throw new IllegalArgumentException("해당 이메일은 이미 존재합니다.");
+        }
     }
 
     @Transactional

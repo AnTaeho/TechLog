@@ -3,12 +3,14 @@ package com.example.techlog.error;
 import com.example.techlog.common.dto.CustomProblemDetail;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -23,6 +25,16 @@ public class GlobalExceptionHandler {
         CustomProblemDetail body = CustomProblemDetail.forStatusAndDetail(
                 statusCode, ex.getMessage() != null ? ex.getMessage() : statusCode.getReasonPhrase());
 
+        return handleExceptionInternal(
+                ex, body, new HttpHeaders(), statusCode);
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<Object> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
+
+        HttpStatus statusCode = HttpStatus.BAD_REQUEST;
+        CustomProblemDetail body = CustomProblemDetail.forStatusAndDetail(
+                statusCode, Objects.requireNonNull(ex.getBindingResult().getFieldError()).getDefaultMessage());
         return handleExceptionInternal(
                 ex, body, new HttpHeaders(), statusCode);
     }

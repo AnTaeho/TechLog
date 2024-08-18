@@ -9,6 +9,7 @@ import com.example.techlog.user.dto.LoginRequest;
 import com.example.techlog.user.dto.UserEmailVO;
 import com.example.techlog.user.dto.UserIdResponse;
 import com.example.techlog.user.service.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -26,12 +27,12 @@ public class UserController {
     private final JwtService jwtService;
 
     @PostMapping("/join")
-    public CommonResponse<UserIdResponse> join(@RequestBody JoinRequest joinRequest) {
+    public CommonResponse<UserIdResponse> join(@Valid @RequestBody JoinRequest joinRequest) {
         return new CommonResponse<>(userService.join(joinRequest));
     }
 
     @PostMapping("/login")
-    public CommonResponse<TokenResponse> login(@RequestBody LoginRequest loginRequest) {
+    public CommonResponse<TokenResponse> login(@Valid @RequestBody LoginRequest loginRequest) {
         UserEmailVO email = userService.login(loginRequest);
         return new CommonResponse<>(jwtService.toTokenResponse(email.value()));
     }

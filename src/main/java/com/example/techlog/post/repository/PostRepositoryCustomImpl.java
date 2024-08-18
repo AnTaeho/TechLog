@@ -1,14 +1,14 @@
 package com.example.techlog.post.repository;
 
-import static com.example.techlog.post.domain.QPost.*;
+import static com.example.techlog.post.domain.QPost.post;
 
+import com.example.techlog.common.RestPage;
 import com.example.techlog.post.domain.Post;
 import com.example.techlog.post.dto.PostSimpleResponse;
 import com.example.techlog.user.domain.QUser;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.List;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
@@ -23,7 +23,7 @@ public class PostRepositoryCustomImpl implements PostRepositoryCustom {
     }
 
     @Override
-    public Page<PostSimpleResponse> getPostPageWithWriterPage(Pageable pageable) {
+    public RestPage<PostSimpleResponse> getPostPageWithWriterPage(Pageable pageable) {
         JPAQuery<Post> query = queryFactory.selectFrom(post)
                 .leftJoin(post.writer, QUser.user).fetchJoin()
                 .where(post.isDeleted.eq(false));
@@ -37,11 +37,11 @@ public class PostRepositoryCustomImpl implements PostRepositoryCustom {
                 .map(this::toSimpleResponse)
                 .toList();
 
-        return new PageImpl<>(results, pageable, count);
+        return new RestPage<>(new PageImpl<>(results, pageable, count));
     }
 
     @Override
-    public Page<PostSimpleResponse> searchByIds(List<Long> ids, Pageable pageable) {
+    public RestPage<PostSimpleResponse> searchByIds(List<Long> ids, Pageable pageable) {
         JPAQuery<Post> query = queryFactory.selectFrom(post)
                 .where(post.id.in(ids));
 
@@ -53,7 +53,7 @@ public class PostRepositoryCustomImpl implements PostRepositoryCustom {
                 .map(this::toSimpleResponse)
                 .toList();
 
-        return new PageImpl<>(result, pageable, size);
+        return new RestPage<>(new PageImpl<>(result, pageable, size));
 
     }
 
@@ -64,7 +64,7 @@ public class PostRepositoryCustomImpl implements PostRepositoryCustom {
                 post.getDescription(),
                 post.getThumbnail(),
                 post.getWriter().getName(),
-                post.getCreatedDate().toLocalDate()
+                post.getCreatedDate().toLocalDate().toString()
         );
     }
 

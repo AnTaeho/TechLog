@@ -1,6 +1,6 @@
 package com.example.techlog.post.dto;
 
-import java.time.LocalDate;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 public record PostDetailResponse(
         Long postId,
@@ -9,6 +9,8 @@ public record PostDetailResponse(
         String thumbnail,
         String writer,
         Long writerId,
-        LocalDate createdAt
+
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+        String createdAt
 ) {
 }

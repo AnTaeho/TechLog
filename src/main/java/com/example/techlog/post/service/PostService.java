@@ -1,5 +1,6 @@
 package com.example.techlog.post.service;
 
+import com.example.techlog.common.RestPage;
 import com.example.techlog.post.domain.Post;
 import com.example.techlog.post.dto.PostDetailResponse;
 import com.example.techlog.post.dto.PostIdResponse;
@@ -17,10 +18,12 @@ import com.example.techlog.user.repository.UserRepository;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,6 +31,11 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class PostService {
+
+    private static final String MAIN_PAGE_CACHE_KEY = "main_page_posts";
+    private static final long CACHE_EXPIRATION = 60; // 60초
+
+    private final RedisTemplate<String, Object> redisTemplate;
 
     private final UserRepository userRepository;
     private final PostRepository postRepository;
@@ -68,12 +76,26 @@ public class PostService {
                 post.getThumbnail(),
                 post.getWriter().getName(),
                 post.getWriter().getId(),
-                post.getCreatedDate().toLocalDate()
+                post.getCreatedDate().toLocalDate().toString()
         );
     }
 
     public Page<PostSimpleResponse> findAllPost(Pageable pageable) {
-        return postRepository.getPostPageWithWriterPage(pageable);
+        if (pageable.getPageNumber() == 0) {
+            RestPage<PostSimpleResponse> cachedPosts = (RestPage<PostSimpleResponse>) redisTemplate.opsForValue().get(MAIN_PAGE_CACHE_KEY);
+
+            if (cachedPosts != null) {
+                System.out.println("Using cached data");
+                return cachedPosts;
+            }
+
+            RestPage<PostSimpleResponse> postPageWithWriterPage = postRepository.getPostPageWithWriterPage(pageable);
+            redisTemplate.opsForValue().set(MAIN_PAGE_CACHE_KEY, postPageWithWriterPage, CACHE_EXPIRATION, TimeUnit.SECONDS);
+
+            return postPageWithWriterPage;
+        } else {
+            return postRepository.getPostPageWithWriterPage(pageable);
+        }
     }
 
     @Transactional

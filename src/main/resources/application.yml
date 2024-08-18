@@ -1,4 +1,8 @@
 spring:
+  jackson:
+    serialization:
+      WRITE_DATES_AS_TIMESTAMPS: false
+    date-format: yyyy-MM-dd
   profiles:
     active: local
     include: secret

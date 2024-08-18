@@ -47,7 +47,6 @@ public class PostService {
         User user = getUser(email);
         Post post = new Post(
                 postWriteRequest.title(),
-                postWriteRequest.description(),
                 postWriteRequest.content(),
                 postWriteRequest.thumbnail(),
                 user

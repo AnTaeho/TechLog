@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 public record PostSimpleResponse(
         Long postId,
         String title,
-        String description,
         String thumbnail,
         String writer,
 

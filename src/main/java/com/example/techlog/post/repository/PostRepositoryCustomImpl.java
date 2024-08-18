@@ -61,7 +61,6 @@ public class PostRepositoryCustomImpl implements PostRepositoryCustom {
         return new PostSimpleResponse(
                 post.getId(),
                 post.getTitle(),
-                post.getDescription(),
                 post.getThumbnail(),
                 post.getWriter().getName(),
                 post.getCreatedDate().toLocalDate().toString()

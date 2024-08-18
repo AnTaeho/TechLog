@@ -29,7 +29,6 @@ public class Post extends BaseEntity {
     private Long id;
 
     private String title;
-    private String description;
 
     @Column(length = 10000)
     private String content;
@@ -45,9 +44,8 @@ public class Post extends BaseEntity {
     @OneToMany(mappedBy = "post")
     private final List<PostTag> postTags = new ArrayList<>();
 
-    public Post(String title, String description, String content, String thumbnail, User user) {
+    public Post(String title, String content, String thumbnail, User user) {
         this.title = title;
-        this.description = description;
         this.content = content;
         this.thumbnail = thumbnail;
         this.isDeleted = false;
@@ -57,7 +55,6 @@ public class Post extends BaseEntity {
 
     public void update(PostUpdateRequest postUpdateRequest) {
         this.title = postUpdateRequest.title();
-        this.description = postUpdateRequest.description();
         this.content = postUpdateRequest.content();
         this.thumbnail = postUpdateRequest.thumbnail();
     }

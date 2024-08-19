@@ -54,6 +54,7 @@ public class PostService {
 
         Post savedPost = postRepository.save(post);
         processingTags(postWriteRequest.tags(), user, savedPost);
+        redisTemplate.delete(MAIN_PAGE_CACHE_KEY);
         return new PostIdResponse(savedPost.getId());
     }
 
@@ -68,6 +69,7 @@ public class PostService {
         }
     }
 
+    // TODO : 쿼리 너무 많이 나감
     public PostDetailResponse getPostDetail(Long postId) {
         Post post = getPostWithWriter(postId);
         return new PostDetailResponse(
@@ -77,7 +79,9 @@ public class PostService {
                 post.getThumbnail(),
                 post.getWriter().getName(),
                 post.getWriter().getId(),
-                post.getCreatedDate().toLocalDate().toString()
+                post.getCreatedDate().toLocalDate().toString(),
+                post.getPostTags().stream()
+                        .map(it -> it.getTag().getContent()).toList()
         );
     }
 

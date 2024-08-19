@@ -1,6 +1,7 @@
 package com.example.techlog.post.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import java.util.List;
 
 public record PostDetailResponse(
         Long postId,
@@ -11,6 +12,8 @@ public record PostDetailResponse(
         Long writerId,
 
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-        String createdAt
+        String createdAt,
+
+        List<String> tags
 ) {
 }

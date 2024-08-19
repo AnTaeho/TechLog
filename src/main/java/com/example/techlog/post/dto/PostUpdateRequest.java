@@ -1,6 +1,9 @@
 package com.example.techlog.post.dto;
 
+import com.example.techlog.tag.dto.TagDto;
+import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.NotEmpty;
+import java.util.List;
 
 public record PostUpdateRequest(
 
@@ -8,6 +11,9 @@ public record PostUpdateRequest(
         String title,
         @NotEmpty(message = "본문 내용은 필수 입니다.")
         String content,
-        String thumbnail
+        String thumbnail,
+
+        @Nullable
+        List<TagDto> tags
 ) {
 }

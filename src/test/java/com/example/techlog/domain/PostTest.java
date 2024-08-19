@@ -2,6 +2,7 @@ package com.example.techlog.domain;
 
 import com.example.techlog.post.domain.Post;
 import com.example.techlog.tag.domain.Tag;
+import java.util.ArrayList;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -34,7 +35,7 @@ class PostTest {
     @Test
     void testUpdatePost() {
         // Given
-        PostUpdateRequest updateRequest = new PostUpdateRequest("Updated Title", "Updated Content", "Updated Thumbnail");
+        PostUpdateRequest updateRequest = new PostUpdateRequest("Updated Title", "Updated Content", "Updated Thumbnail", new ArrayList<>());
 
         // When
         post.update(updateRequest);

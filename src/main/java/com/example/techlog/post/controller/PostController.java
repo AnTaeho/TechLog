@@ -65,7 +65,7 @@ public class PostController {
 
     @PatchMapping("/{postId}")
     public CommonResponse<PostIdResponse> updatePost(@PathVariable("postId") Long postId, @RequestBody PostUpdateRequest postUpdateRequest) {
-        return new CommonResponse<>(postService.updatePost(postId, postUpdateRequest));
+        return new CommonResponse<>(postService.updatePost(postId, postUpdateRequest, getUserName()));
     }
 
     @DeleteMapping("/{postId}")

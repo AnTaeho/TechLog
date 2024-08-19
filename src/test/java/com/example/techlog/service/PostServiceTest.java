@@ -9,6 +9,7 @@ import com.example.techlog.tag.repository.PostTagRepository;
 import com.example.techlog.tag.repository.TagRepository;
 import com.example.techlog.user.domain.User;
 import com.example.techlog.user.repository.UserRepository;
+import java.util.ArrayList;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -102,10 +103,10 @@ public class PostServiceTest {
         Post post = new Post("Old Title", "Old Content", "Old Thumbnail", testUser);
         postRepository.save(post);
 
-        PostUpdateRequest updateRequest = new PostUpdateRequest("New Title", "New Content", "New Thumbnail");
+        PostUpdateRequest updateRequest = new PostUpdateRequest("New Title", "New Content", "New Thumbnail", new ArrayList<>());
 
         // when
-        postService.updatePost(post.getId(), updateRequest);
+        postService.updatePost(post.getId(), updateRequest, "test@example.com");
 
         // then
         Post updatedPost = postRepository.findById(post.getId()).orElseThrow();

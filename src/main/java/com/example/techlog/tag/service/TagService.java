@@ -4,6 +4,7 @@ import com.example.techlog.tag.domain.Tag;
 import com.example.techlog.tag.dto.TagCreateRequest;
 import com.example.techlog.tag.dto.TagDto;
 import com.example.techlog.tag.dto.TagIdResponse;
+import com.example.techlog.tag.dto.TagListResponse;
 import com.example.techlog.tag.repository.PostTagRepository;
 import com.example.techlog.tag.repository.TagRepository;
 import com.example.techlog.user.domain.User;
@@ -30,6 +31,14 @@ public class TagService {
             return new ArrayList<>();
         }
         return postTagRepository.findByTagId(tag.get().getId());
+    }
+
+    public TagListResponse getMyTags(String email) {
+        User user = getUser(email);
+        List<String> result = tagRepository.findAllByUserId(user.getId()).stream()
+                .map(Tag::getContent)
+                .toList();
+        return new TagListResponse(result);
     }
 
     @Transactional

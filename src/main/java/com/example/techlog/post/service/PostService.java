@@ -63,7 +63,6 @@ public class PostService {
         }
         for (TagDto dto : tags) {
             Optional<Tag> byContent = tagRepository.findByContent(dto.content());
-            System.out.println(dto.content());
             Tag tag = byContent.orElseGet(() -> tagRepository.save(new Tag(dto.content(), user)));
             postTagRepository.save(new PostTag(post, tag));
         }
@@ -101,9 +100,12 @@ public class PostService {
     }
 
     @Transactional
-    public PostIdResponse updatePost(Long postId, PostUpdateRequest postUpdateRequest) {
+    public PostIdResponse updatePost(Long postId, PostUpdateRequest postUpdateRequest, String userName) {
         Post post = getPost(postId);
+        User user = getUser(userName);
         post.update(postUpdateRequest);
+        postTagRepository.deleteAllByPost(postId);
+        processingTags(postUpdateRequest.tags(), user, post);
         return new PostIdResponse(post.getId());
     }
 

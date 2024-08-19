@@ -4,10 +4,12 @@ import com.example.techlog.common.dto.CommonResponse;
 import com.example.techlog.common.dto.EmptyDto;
 import com.example.techlog.tag.dto.TagCreateRequest;
 import com.example.techlog.tag.dto.TagIdResponse;
+import com.example.techlog.tag.dto.TagListResponse;
 import com.example.techlog.tag.service.TagService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -24,6 +26,11 @@ public class TagController {
     @PostMapping
     public CommonResponse<TagIdResponse> createTag(@RequestBody TagCreateRequest tagCreateRequest) {
         return new CommonResponse<>(tagService.createTag(getUserName(), tagCreateRequest));
+    }
+
+    @GetMapping
+    public CommonResponse<TagListResponse> getMyTags() {
+        return new CommonResponse<>(tagService.getMyTags(getUserName()));
     }
 
     @DeleteMapping("/{tagId}")

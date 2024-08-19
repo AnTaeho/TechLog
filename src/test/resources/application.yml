@@ -1,0 +1,5 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:testdb;MODE=MYSQL;NON_KEYWORDS=USER
+  profiles:
+    include: secret

@@ -58,6 +58,9 @@ public class PostService {
     }
 
     private void processingTags(List<TagDto> tags, User user, Post post) {
+        if (tags == null || tags.isEmpty()) {
+            return;
+        }
         for (TagDto dto : tags) {
             Optional<Tag> byContent = tagRepository.findByContent(dto.content());
             System.out.println(dto.content());
@@ -107,7 +110,7 @@ public class PostService {
     @Transactional
     public void deletePost(Long postId) {
         Post post = getPost(postId);
-        postTagRepository.deleteAllByPost(post);
+        postTagRepository.deleteAllByPost(post.getId());
         post.delete();
     }
 

@@ -48,7 +48,7 @@ public class PostRepositoryCustomImpl implements PostRepositoryCustom {
     public RestPage<PostSimpleResponse> searchByIds(List<Long> ids, Pageable pageable) {
         JPAQuery<Post> query = queryFactory.selectFrom(post)
                 .leftJoin(post.postTags, QPostTag.postTag).fetchJoin()
-                .where(post.id.in(ids));
+                .where(post.id.in(ids).and(post.isDeleted).eq(false));
 
         long size = query.fetch().size();
 

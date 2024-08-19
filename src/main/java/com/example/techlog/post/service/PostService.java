@@ -118,6 +118,7 @@ public class PostService {
         Post post = getPost(postId);
         postTagRepository.deleteAllByPost(post.getId());
         post.delete();
+        redisTemplate.delete(MAIN_PAGE_CACHE_KEY);
     }
 
     private User getUser(String email) {

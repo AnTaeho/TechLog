@@ -136,7 +136,7 @@ public class PostServiceTest {
         Post post2 = postRepository.save(new Post("Title2", "Content2", "Thumbnail2", testUser));
 
         // when
-        Page<PostSimpleResponse> posts = postService.findAllPost(PageRequest.of(0, 10));
+        Page<PostSimpleResponse> posts = postService.findAllPost(PageRequest.of(0, 2));
 
         // then
         assertThat(posts.getContent()).hasSize(2);
@@ -153,7 +153,7 @@ public class PostServiceTest {
         List<Long> ids = List.of(post1.getId(), post2.getId());
 
         // when
-        Page<PostSimpleResponse> posts = postService.findAllByIds(ids, PageRequest.of(0, 10));
+        Page<PostSimpleResponse> posts = postService.findAllByIds(ids, PageRequest.of(0, 2));
 
         // then
         assertThat(posts.getContent()).hasSize(2);

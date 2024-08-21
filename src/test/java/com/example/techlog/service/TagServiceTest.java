@@ -81,7 +81,7 @@ class TagServiceTest {
 
 
         // When
-        List<Long> postIds = tagService.searchByTag(new TagDto("Spring Boot"));
+        List<Long> postIds = tagService.searchByTag("Spring Boot");
 
         // Then
         assertThat(postIds).isNotEmpty();
@@ -90,7 +90,7 @@ class TagServiceTest {
     @Test
     void testSearchByTagNotFound() {
         // When
-        List<Long> postIds = tagService.searchByTag(new TagDto("Nonexistent Tag"));
+        List<Long> postIds = tagService.searchByTag("Nonexistent Tag");
 
         // Then
         assertThat(postIds).isEmpty();

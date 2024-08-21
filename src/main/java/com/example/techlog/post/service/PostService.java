@@ -93,7 +93,9 @@ public class PostService {
                 System.out.println("Using cached data");
                 return cachedPosts;
             }
-
+//            RestPage<Post> result2 = new RestPage<>(postRepository.getPostPageWithWriterPage2(pageable));
+//
+//            Page<PostSimpleResponse> map = result2.map(it -> PostSimpleResponse.of(it, new ArrayList<>()));
             RestPage<PostSimpleResponse> postPageWithWriterPage = postRepository.getPostPageWithWriterPage(pageable);
             redisTemplate.opsForValue().set(MAIN_PAGE_CACHE_KEY, postPageWithWriterPage, CACHE_EXPIRATION, TimeUnit.SECONDS);
 

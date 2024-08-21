@@ -37,8 +37,10 @@ public class PostRepositoryCustomImpl implements PostRepositoryCustom {
         List<PostSimpleResponse> results = query
                 .orderBy(post.id.desc())
                 .offset(pageable.getOffset())
-                .limit(pageable.getPageSize()).stream()
+                .limit(pageable.getPageSize()).fetch()
+                .stream()
                 .map(this::toSimpleResponse)
+                .distinct()
                 .toList();
 
         return new RestPage<>(new PageImpl<>(results, pageable, count));

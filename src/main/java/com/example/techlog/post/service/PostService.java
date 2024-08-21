@@ -110,6 +110,7 @@ public class PostService {
         post.update(postUpdateRequest);
         postTagRepository.deleteAllByPost(postId);
         processingTags(postUpdateRequest.tags(), user, post);
+        redisTemplate.delete(MAIN_PAGE_CACHE_KEY);
         return new PostIdResponse(post.getId());
     }
 

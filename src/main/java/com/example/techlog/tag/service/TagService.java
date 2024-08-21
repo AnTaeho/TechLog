@@ -2,7 +2,6 @@ package com.example.techlog.tag.service;
 
 import com.example.techlog.tag.domain.Tag;
 import com.example.techlog.tag.dto.TagCreateRequest;
-import com.example.techlog.tag.dto.TagDto;
 import com.example.techlog.tag.dto.TagIdResponse;
 import com.example.techlog.tag.dto.TagListResponse;
 import com.example.techlog.tag.repository.PostTagRepository;
@@ -25,8 +24,8 @@ public class TagService {
     private final TagRepository tagRepository;
     private final PostTagRepository postTagRepository;
 
-    public List<Long> searchByTag(TagDto tagDto) {
-        Optional<Tag> tag = tagRepository.findByContent(tagDto.content());
+    public List<Long> searchByTag(String tagDto) {
+        Optional<Tag> tag = tagRepository.findByContent(tagDto);
         if (tag.isEmpty()) {
             return new ArrayList<>();
         }

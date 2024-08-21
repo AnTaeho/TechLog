@@ -48,20 +48,26 @@ public class PostRepositoryCustomImpl implements PostRepositoryCustom {
 
     @Override
     public RestPage<PostSimpleResponse> searchByIds(List<Long> ids, Pageable pageable) {
-        JPAQuery<Post> query = queryFactory.selectFrom(post).distinct()
+        JPAQuery<Post> query = queryFactory.selectFrom(post)
                 .leftJoin(post.postTags, QPostTag.postTag).fetchJoin()
                 .where(post.id.in(ids))
-                .orderBy(post.id.desc());
+                .where(post.isDeleted.eq(false));
 
-        List<PostSimpleResponse> result = query.offset(pageable.getOffset())
-                .limit(pageable.getPageSize())
-                .fetch()
+        long total = queryFactory
+                .select(post.id)
+                .from(post)
+                .where(post.isDeleted.eq(false))
+                .where(post.id.in(ids))
+                .fetch().size();
+
+        List<PostSimpleResponse> result = query
+                .orderBy(post.id.desc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize()).fetch()
                 .stream()
                 .map(this::toSimpleResponse)
                 .distinct()
                 .toList();
-
-        long total = query.fetch().size();
 
         return new RestPage<>(new PageImpl<>(result, pageable, total));
 
@@ -89,6 +95,5 @@ public class PostRepositoryCustomImpl implements PostRepositoryCustom {
                 .where(tag.id.in(ids))
                 .fetch();
     }
-
 
 }

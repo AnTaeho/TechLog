@@ -9,7 +9,6 @@ import com.example.techlog.post.domain.Post;
 import com.example.techlog.post.dto.PostDetailResponse;
 import com.example.techlog.post.dto.PostSimpleResponse;
 import com.example.techlog.tag.domain.QTag;
-import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.Collections;
 import java.util.List;
@@ -79,11 +78,28 @@ public class PostRepositoryCustomImpl implements PostRepositoryCustom {
 
     @Override
     public RestPage<PostSimpleResponse> searchByIds(List<Long> ids, Pageable pageable) {
-        JPAQuery<Post> query = queryFactory
-                .selectFrom(post)
-                .leftJoin(post.postTags, postTag).fetchJoin()
+        List<Long> postIds = queryFactory
+                .select(post.id)
+                .from(post)
+                .where(post.isDeleted.eq(false))
                 .where(post.id.in(ids))
-                .where(post.isDeleted.eq(false));
+                .orderBy(post.id.desc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+        if (postIds.isEmpty()) {
+            return new RestPage<>(new PageImpl<>(Collections.emptyList(), pageable, 0));
+        }
+
+        List<Post> posts = queryFactory
+                .selectFrom(post)
+                .leftJoin(post.writer, user).fetchJoin()
+                .leftJoin(post.postTags, postTag).fetchJoin()
+                .leftJoin(postTag.tag, QTag.tag).fetchJoin()
+                .where(post.id.in(postIds))
+                .orderBy(post.id.desc())
+                .fetch();
 
         long total = queryFactory
                 .select(post.id)
@@ -92,11 +108,7 @@ public class PostRepositoryCustomImpl implements PostRepositoryCustom {
                 .where(post.id.in(ids))
                 .fetch().size();
 
-        List<PostSimpleResponse> result = query
-                .orderBy(post.id.desc())
-                .offset(pageable.getOffset())
-                .limit(pageable.getPageSize()).fetch()
-                .stream()
+        List<PostSimpleResponse> result = posts.stream()
                 .map(this::toSimpleResponse)
                 .toList();
 
@@ -115,7 +127,7 @@ public class PostRepositoryCustomImpl implements PostRepositoryCustom {
                 .stream().findFirst();
 
         if (query.isEmpty()) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("해당 게시글은 없습니다.");
         }
 
         Post result = query.get();

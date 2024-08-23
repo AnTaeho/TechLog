@@ -13,4 +13,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     boolean existsByEmail(String Email);
 
+    @Query("SELECT u FROM User u JOIN FETCH u.tags WHERE u.isDeleted = false AND u.email = :email")
+    Optional<User> getUserWithTag(@Param("email") String email);
 }

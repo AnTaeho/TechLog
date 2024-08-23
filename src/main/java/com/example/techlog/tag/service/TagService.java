@@ -33,8 +33,8 @@ public class TagService {
     }
 
     public TagListResponse getMyTags(String email) {
-        User user = getUser(email);
-        List<String> result = tagRepository.findAllByUserId(user.getId()).stream()
+        User user = getUserWithTag(email);
+        List<String> result = user.getTags().stream()
                 .map(Tag::getContent)
                 .toList();
         return new TagListResponse(result);
@@ -42,7 +42,7 @@ public class TagService {
 
     @Transactional
     public TagIdResponse createTag(String email, TagCreateRequest tagCreateRequest) {
-        User user = getUser(email);
+        User user = getUserWithTag(email);
         Tag tag = new Tag(tagCreateRequest.content(), user);
         Tag savedTag = tagRepository.save(tag);
         return new TagIdResponse(savedTag.getId());
@@ -53,8 +53,8 @@ public class TagService {
         tagRepository.deleteById(tagId);
     }
 
-    private User getUser(String email) {
-        return userRepository.findByEmail(email)
+    private User getUserWithTag(String email) {
+        return userRepository.getUserWithTag(email)
                 .orElseThrow(() -> new IllegalArgumentException("해당 유저를 찾을 수 없습니다."));
     }
 

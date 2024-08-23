@@ -45,7 +45,6 @@ public class S3ImageService {
                 new PutObjectRequest(bucket, createFileName, byteArrayIs, objMeta)
                         .withCannedAcl(CannedAccessControlList.PublicRead)
         );
-        System.out.println("업로드 드간다");
         return new UploadResponse(
                 amazonS3Client.getUrl(bucket, createFileName).toString()
         );

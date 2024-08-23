@@ -22,7 +22,6 @@ public class S3ImageController {
 
     @PostMapping
     public CommonResponse<UploadResponse> uploadFile(@ModelAttribute UploadRequest uploadRequest) throws IOException {
-        System.out.println("업로드 시작");
         return new CommonResponse<>(s3ImageService.upload(
                 uploadRequest.files()
         ));

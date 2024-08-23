@@ -1,17 +1,19 @@
 package com.example.techlog.post.repository;
 
 import static com.example.techlog.post.domain.QPost.post;
+import static com.example.techlog.tag.domain.QPostTag.*;
+import static com.example.techlog.user.domain.QUser.*;
 
 import com.example.techlog.common.RestPage;
 import com.example.techlog.post.domain.Post;
+import com.example.techlog.post.dto.PostDetailResponse;
 import com.example.techlog.post.dto.PostSimpleResponse;
-import com.example.techlog.tag.domain.QPostTag;
 import com.example.techlog.tag.domain.QTag;
-import com.example.techlog.user.domain.QUser;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
@@ -42,9 +44,9 @@ public class PostRepositoryCustomImpl implements PostRepositoryCustom {
 
         List<Post> posts = queryFactory
                 .selectFrom(post)
-                .leftJoin(post.writer, QUser.user).fetchJoin()
-                .leftJoin(post.postTags, QPostTag.postTag).fetchJoin()
-                .leftJoin(QPostTag.postTag.tag, QTag.tag).fetchJoin()
+                .leftJoin(post.writer, user).fetchJoin()
+                .leftJoin(post.postTags, postTag).fetchJoin()
+                .leftJoin(postTag.tag, QTag.tag).fetchJoin()
                 .where(post.id.in(postIds))
                 .orderBy(post.id.desc())
                 .fetch();
@@ -79,7 +81,7 @@ public class PostRepositoryCustomImpl implements PostRepositoryCustom {
     public RestPage<PostSimpleResponse> searchByIds(List<Long> ids, Pageable pageable) {
         JPAQuery<Post> query = queryFactory
                 .selectFrom(post)
-                .leftJoin(post.postTags, QPostTag.postTag).fetchJoin()
+                .leftJoin(post.postTags, postTag).fetchJoin()
                 .where(post.id.in(ids))
                 .where(post.isDeleted.eq(false));
 
@@ -99,6 +101,36 @@ public class PostRepositoryCustomImpl implements PostRepositoryCustom {
                 .toList();
 
         return new RestPage<>(new PageImpl<>(result, pageable, total));
+    }
+
+    @Override
+    public PostDetailResponse findPostWithFullInfo(Long postId) {
+        Optional<Post> query = queryFactory
+                .selectFrom(post)
+                .leftJoin(post.writer, user).fetchJoin()
+                .leftJoin(post.postTags, postTag).fetchJoin()
+                .leftJoin(postTag.tag, QTag.tag).fetchJoin()
+                .where(post.isDeleted.eq(false))
+                .where(post.id.eq(postId))
+                .stream().findFirst();
+
+        if (query.isEmpty()) {
+            throw new IllegalArgumentException();
+        }
+
+        Post result = query.get();
+
+        return new PostDetailResponse(
+                postId,
+                result.getTitle(),
+                result.getContent(),
+                result.getThumbnail(),
+                result.getWriter().getName(),
+                result.getWriter().getId(),
+                result.getCreatedDate().toLocalDate().toString(),
+                result.getPostTags().stream()
+                        .map(it -> it.getTag().getContent()).toList()
+        );
     }
 
 }

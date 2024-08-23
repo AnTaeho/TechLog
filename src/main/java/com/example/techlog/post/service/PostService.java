@@ -33,7 +33,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class PostService {
 
     private static final String MAIN_PAGE_CACHE_KEY = "main_page_posts";
-    private static final long CACHE_EXPIRATION = 60; // 60초
+    private static final long CACHE_EXPIRATION = 60;
 
     private final RedisTemplate<String, Object> redisTemplate;
 
@@ -42,6 +42,7 @@ public class PostService {
     private final TagRepository tagRepository;
     private final PostTagRepository postTagRepository;
 
+    // 태그들이 저장되면서 쿼리가 많이 발생하는데 해결 방법 고민
     @Transactional
     public PostIdResponse writePost(PostWriteRequest postWriteRequest, String email) {
         User user = getUser(email);
@@ -69,20 +70,8 @@ public class PostService {
         }
     }
 
-    // TODO : 쿼리 너무 많이 나감
     public PostDetailResponse getPostDetail(Long postId) {
-        Post post = getPostWithWriter(postId);
-        return new PostDetailResponse(
-                postId,
-                post.getTitle(),
-                post.getContent(),
-                post.getThumbnail(),
-                post.getWriter().getName(),
-                post.getWriter().getId(),
-                post.getCreatedDate().toLocalDate().toString(),
-                post.getPostTags().stream()
-                        .map(it -> it.getTag().getContent()).toList()
-        );
+        return postRepository.findPostWithFullInfo(postId);
     }
 
     public Page<PostSimpleResponse> findAllPost(Pageable pageable) {
@@ -128,12 +117,6 @@ public class PostService {
 
     private Post getPost(Long postId) {
         return postRepository.findById(postId)
-                .filter(it -> !it.isDeleted())
-                .orElseThrow(() -> new IllegalArgumentException("해당 포스트를 찾을 수 없습니다."));
-    }
-
-    private Post getPostWithWriter(Long postId) {
-        return postRepository.getPostWithWriter(postId)
                 .filter(it -> !it.isDeleted())
                 .orElseThrow(() -> new IllegalArgumentException("해당 포스트를 찾을 수 없습니다."));
     }

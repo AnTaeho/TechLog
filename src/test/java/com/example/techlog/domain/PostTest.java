@@ -27,7 +27,6 @@ class PostTest {
         assertThat(post.getTitle()).isEqualTo("Initial Title");
         assertThat(post.getContent()).isEqualTo("Initial Content");
         assertThat(post.getThumbnail()).isEqualTo("Initial Thumbnail");
-        assertThat(post.isDeleted()).isFalse();
         assertThat(post.getWriter()).isEqualTo(user);
         assertThat(post.getPostTags()).isEmpty();
     }
@@ -44,15 +43,6 @@ class PostTest {
         assertThat(post.getTitle()).isEqualTo("Updated Title");
         assertThat(post.getContent()).isEqualTo("Updated Content");
         assertThat(post.getThumbnail()).isEqualTo("Updated Thumbnail");
-    }
-
-    @Test
-    void testDeletePost() {
-        // When
-        post.delete();
-
-        // Then
-        assertThat(post.isDeleted()).isTrue();
     }
 
     @Test

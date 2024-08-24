@@ -35,8 +35,6 @@ public class Post extends BaseEntity {
 
     private String thumbnail;
 
-    private boolean isDeleted;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User writer;
@@ -48,7 +46,6 @@ public class Post extends BaseEntity {
         this.title = title;
         this.content = content;
         this.thumbnail = thumbnail;
-        this.isDeleted = false;
         this.writer = user;
         user.addPost(this);
     }
@@ -57,10 +54,6 @@ public class Post extends BaseEntity {
         this.title = postUpdateRequest.title();
         this.content = postUpdateRequest.content();
         this.thumbnail = postUpdateRequest.thumbnail();
-    }
-
-    public void delete() {
-        this.isDeleted = true;
     }
 
     public void add(PostTag postTag) {

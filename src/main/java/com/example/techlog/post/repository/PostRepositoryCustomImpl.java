@@ -31,7 +31,6 @@ public class PostRepositoryCustomImpl implements PostRepositoryCustom {
         List<Long> postIds = queryFactory
                 .select(post.id)
                 .from(post)
-                .where(post.isDeleted.eq(false))
                 .orderBy(post.id.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
@@ -53,7 +52,6 @@ public class PostRepositoryCustomImpl implements PostRepositoryCustom {
         long count = queryFactory
                 .select(post.id)
                 .from(post)
-                .where(post.isDeleted.eq(false))
                 .fetch().size();
 
         List<PostSimpleResponse> result = posts.stream()
@@ -81,7 +79,6 @@ public class PostRepositoryCustomImpl implements PostRepositoryCustom {
         List<Long> postIds = queryFactory
                 .select(post.id)
                 .from(post)
-                .where(post.isDeleted.eq(false))
                 .where(post.id.in(ids))
                 .orderBy(post.id.desc())
                 .offset(pageable.getOffset())
@@ -104,7 +101,6 @@ public class PostRepositoryCustomImpl implements PostRepositoryCustom {
         long total = queryFactory
                 .select(post.id)
                 .from(post)
-                .where(post.isDeleted.eq(false))
                 .where(post.id.in(ids))
                 .fetch().size();
 
@@ -122,7 +118,6 @@ public class PostRepositoryCustomImpl implements PostRepositoryCustom {
                 .leftJoin(post.writer, user).fetchJoin()
                 .leftJoin(post.postTags, postTag).fetchJoin()
                 .leftJoin(postTag.tag, QTag.tag).fetchJoin()
-                .where(post.isDeleted.eq(false))
                 .where(post.id.eq(postId))
                 .stream().findFirst();
 

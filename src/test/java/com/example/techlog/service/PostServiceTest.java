@@ -125,7 +125,6 @@ public class PostServiceTest {
 
         // then
         Post deletedPost = postRepository.findById(post.getId()).orElse(null);
-        assertThat(deletedPost.isDeleted()).isTrue();
 //        assertThat(postTagRepository.findAllByPost(post)).isEmpty();
     }
 

@@ -42,7 +42,6 @@ public class PostService {
     private final TagRepository tagRepository;
     private final PostTagRepository postTagRepository;
 
-    // 태그들이 저장되면서 쿼리가 많이 발생하는데 해결 방법 고민
     @Transactional
     public PostIdResponse writePost(PostWriteRequest postWriteRequest, String email) {
         User user = getUser(email);
@@ -106,7 +105,7 @@ public class PostService {
     public void deletePost(Long postId) {
         Post post = getPost(postId);
         postTagRepository.deleteAllByPost(post.getId());
-        post.delete();
+        postRepository.delete(post);
         redisTemplate.delete(MAIN_PAGE_CACHE_KEY);
     }
 
@@ -117,7 +116,6 @@ public class PostService {
 
     private Post getPost(Long postId) {
         return postRepository.findById(postId)
-                .filter(it -> !it.isDeleted())
                 .orElseThrow(() -> new IllegalArgumentException("해당 포스트를 찾을 수 없습니다."));
     }
 

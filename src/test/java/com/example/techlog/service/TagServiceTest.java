@@ -5,7 +5,6 @@ import com.example.techlog.post.repository.PostRepository;
 import com.example.techlog.tag.domain.PostTag;
 import com.example.techlog.tag.domain.Tag;
 import com.example.techlog.tag.dto.TagCreateRequest;
-import com.example.techlog.tag.dto.TagDto;
 import com.example.techlog.tag.dto.TagIdResponse;
 import com.example.techlog.tag.repository.PostTagRepository;
 import com.example.techlog.tag.repository.TagRepository;
@@ -55,7 +54,7 @@ class TagServiceTest {
         TagCreateRequest request = new TagCreateRequest("Java");
 
         // When
-        TagIdResponse response = tagService.createTag(user.getEmail(), request);
+        TagIdResponse response = tagService.createTag("an981022@naver.com", request);
 
         // Then
         assertThat(response).isNotNull();

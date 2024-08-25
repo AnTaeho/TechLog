@@ -1,6 +1,5 @@
 package com.example.techlog.tag.service;
 
-import com.example.techlog.tag.domain.PostTag;
 import com.example.techlog.tag.domain.Tag;
 import com.example.techlog.tag.dto.TagCreateRequest;
 import com.example.techlog.tag.dto.TagIdResponse;
@@ -25,7 +24,7 @@ public class TagService {
     public List<Long> searchByTag(String tagDto) {
         return tagRepository.findByContentWithPostTag(tagDto)
                 .map(value -> value.getPostTags().stream()
-                .map(PostTag::getId)
+                .map(it -> it.getPost().getId())
                 .toList()).orElseGet(ArrayList::new);
     }
 

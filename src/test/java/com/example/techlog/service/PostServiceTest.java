@@ -1,7 +1,14 @@
 package com.example.techlog.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import com.example.techlog.post.domain.Post;
-import com.example.techlog.post.dto.*;
+import com.example.techlog.post.dto.PostDetailResponse;
+import com.example.techlog.post.dto.PostIdResponse;
+import com.example.techlog.post.dto.PostSimpleResponse;
+import com.example.techlog.post.dto.PostUpdateRequest;
+import com.example.techlog.post.dto.PostWriteRequest;
 import com.example.techlog.post.repository.PostRepository;
 import com.example.techlog.post.service.PostService;
 import com.example.techlog.tag.dto.TagDto;
@@ -10,6 +17,7 @@ import com.example.techlog.tag.repository.TagRepository;
 import com.example.techlog.user.domain.User;
 import com.example.techlog.user.repository.UserRepository;
 import java.util.ArrayList;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,11 +26,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
 @Transactional
@@ -56,7 +59,7 @@ public class PostServiceTest {
     @Test
     void shouldWritePostAndReturnPostId() {
         // given
-        PostWriteRequest postWriteRequest = new PostWriteRequest("Test Title", "Test Content", "Test Thumbnail", List.of(new TagDto("tag1"), new TagDto("tag2")));
+        PostWriteRequest postWriteRequest = new PostWriteRequest("Test Title", "Test Content", "Test Thumbnail", List.of(new TagDto("tag1"), new TagDto("tag2")), null);
 
         // when
         PostIdResponse response = postService.writePost(postWriteRequest, testUser.getEmail());
@@ -74,7 +77,7 @@ public class PostServiceTest {
     @Test
     void shouldThrowExceptionWhenUserNotFound() {
         // given
-        PostWriteRequest postWriteRequest = new PostWriteRequest("Test Title", "Test Content", "Test Thumbnail", List.of());
+        PostWriteRequest postWriteRequest = new PostWriteRequest("Test Title", "Test Content", "Test Thumbnail", List.of(), null);
 
         // when & then
         assertThrows(IllegalArgumentException.class, () -> {

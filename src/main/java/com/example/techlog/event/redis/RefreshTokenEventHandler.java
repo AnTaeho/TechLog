@@ -1,4 +1,4 @@
-package com.example.techlog.event;
+package com.example.techlog.event.redis;
 
 import com.example.techlog.redis.RefreshToken;
 import com.example.techlog.redis.RefreshTokenRepository;
@@ -14,7 +14,7 @@ public class RefreshTokenEventHandler {
     private final RefreshTokenRepository refreshTokenRepository;
 
     @Async
-    @EventListener
+    @EventListener(RedisEvent.class)
     public void saveRefreshToken(RedisEvent event) {
         refreshTokenRepository.save(new RefreshToken(event.email(), event.refreshToken()));
     }

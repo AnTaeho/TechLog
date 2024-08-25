@@ -1,15 +1,15 @@
 package com.example.techlog.domain;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import com.example.techlog.post.domain.Post;
+import com.example.techlog.post.dto.PostUpdateRequest;
+import com.example.techlog.tag.domain.PostTag;
 import com.example.techlog.tag.domain.Tag;
+import com.example.techlog.user.domain.User;
 import java.util.ArrayList;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import static org.assertj.core.api.Assertions.assertThat;
-
-import com.example.techlog.user.domain.User;
-import com.example.techlog.post.dto.PostUpdateRequest;
-import com.example.techlog.tag.domain.PostTag;
 
 class PostTest {
 

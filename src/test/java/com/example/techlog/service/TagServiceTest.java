@@ -1,5 +1,7 @@
 package com.example.techlog.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import com.example.techlog.post.domain.Post;
 import com.example.techlog.post.repository.PostRepository;
 import com.example.techlog.tag.domain.PostTag;
@@ -11,15 +13,12 @@ import com.example.techlog.tag.repository.TagRepository;
 import com.example.techlog.tag.service.TagService;
 import com.example.techlog.user.domain.User;
 import com.example.techlog.user.repository.UserRepository;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 @Transactional

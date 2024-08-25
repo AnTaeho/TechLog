@@ -1,4 +1,4 @@
-package com.example.techlog.event;
+package com.example.techlog.event.redis;
 
 public record RedisEvent(
         String email,

@@ -1,14 +1,15 @@
 package com.example.techlog.domain;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import com.example.techlog.post.domain.Post;
+import com.example.techlog.tag.domain.Tag;
 import com.example.techlog.user.domain.User;
 import com.example.techlog.user.domain.UserRole;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import com.example.techlog.post.domain.Post;
-import com.example.techlog.tag.domain.Tag;
-import static org.assertj.core.api.Assertions.assertThat;
 
 class UserTest {
 

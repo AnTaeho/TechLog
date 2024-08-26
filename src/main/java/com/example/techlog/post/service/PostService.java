@@ -99,6 +99,7 @@ public class PostService {
         Post post = getPost(postId);
         User user = getUser(userName);
         post.update(postUpdateRequest);
+        publisher.publishEvent(new ImageSaveEvent(postUpdateRequest.newUrls(), post.getId()));
         postTagRepository.deleteAllByPost(postId);
         processingTags(postUpdateRequest.tags(), user, post);
         redisTemplate.delete(MAIN_PAGE_CACHE_KEY);

@@ -17,6 +17,6 @@ public record PostUpdateRequest(
         List<TagDto> tags,
 
         @Nullable
-        List<String> urls
+        List<String> newUrls
 ) {
 }

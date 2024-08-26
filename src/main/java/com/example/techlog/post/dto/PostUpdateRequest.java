@@ -14,6 +14,9 @@ public record PostUpdateRequest(
         String thumbnail,
 
         @Nullable
-        List<TagDto> tags
+        List<TagDto> tags,
+
+        @Nullable
+        List<String> urls
 ) {
 }

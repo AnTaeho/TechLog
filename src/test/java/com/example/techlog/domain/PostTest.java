@@ -34,7 +34,7 @@ class PostTest {
     @Test
     void testUpdatePost() {
         // Given
-        PostUpdateRequest updateRequest = new PostUpdateRequest("Updated Title", "Updated Content", "Updated Thumbnail", new ArrayList<>());
+        PostUpdateRequest updateRequest = new PostUpdateRequest("Updated Title", "Updated Content", "Updated Thumbnail", new ArrayList<>(), null);
 
         // When
         post.update(updateRequest);

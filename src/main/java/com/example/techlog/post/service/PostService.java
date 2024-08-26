@@ -1,6 +1,7 @@
 package com.example.techlog.post.service;
 
 import com.example.techlog.common.RestPage;
+import com.example.techlog.event.image.ImageSaveEvent;
 import com.example.techlog.post.domain.Post;
 import com.example.techlog.post.dto.PostDetailResponse;
 import com.example.techlog.post.dto.PostIdResponse;
@@ -20,6 +21,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -41,6 +43,7 @@ public class PostService {
     private final PostRepository postRepository;
     private final TagRepository tagRepository;
     private final PostTagRepository postTagRepository;
+    private final ApplicationEventPublisher publisher;
 
     @Transactional
     public PostIdResponse writePost(PostWriteRequest postWriteRequest, String email) {
@@ -53,6 +56,7 @@ public class PostService {
         );
 
         Post savedPost = postRepository.save(post);
+        publisher.publishEvent(new ImageSaveEvent(postWriteRequest.urls(), savedPost.getId()));
         processingTags(postWriteRequest.tags(), user, savedPost);
         redisTemplate.delete(MAIN_PAGE_CACHE_KEY);
         return new PostIdResponse(savedPost.getId());

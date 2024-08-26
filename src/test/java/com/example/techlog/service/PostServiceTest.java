@@ -106,7 +106,7 @@ public class PostServiceTest {
         Post post = new Post("Old Title", "Old Content", "Old Thumbnail", testUser);
         postRepository.save(post);
 
-        PostUpdateRequest updateRequest = new PostUpdateRequest("New Title", "New Content", "New Thumbnail", new ArrayList<>());
+        PostUpdateRequest updateRequest = new PostUpdateRequest("New Title", "New Content", "New Thumbnail", new ArrayList<>(), null);
 
         // when
         postService.updatePost(post.getId(), updateRequest, "test@example.com");

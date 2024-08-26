@@ -52,6 +52,7 @@ public class SecurityConfig {
                                 .requestMatchers("/users/**").permitAll()
                                 .requestMatchers(HttpMethod.GET,"/posts/**").permitAll()
                                 .requestMatchers("/error/**").permitAll()
+                                .requestMatchers("/errors/**").permitAll()
                                 .requestMatchers("/").permitAll()
                                 .anyRequest().authenticated()
                 )

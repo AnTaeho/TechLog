@@ -3,6 +3,8 @@ package com.example.techlog.error;
 import com.example.techlog.common.dto.CustomProblemDetail;
 import com.example.techlog.error.custom.CommonException;
 import com.example.techlog.error.custom.CriticalException;
+import com.example.techlog.slack.SlackNotification;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -15,14 +17,16 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 @Slf4j
 @RestControllerAdvice
-public class GlobalExceptionHandler {
+public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
+    @SlackNotification
     @ExceptionHandler(CriticalException.class)
-    public ResponseEntity<Object> handelCriticalError(CriticalException ex) {
-
+    public ResponseEntity<Object> handelCriticalError(CriticalException ex, WebRequest request) {
         HttpStatus httpStatus = ex.getErrorCode();
 
         CustomProblemDetail body = CustomProblemDetail.forStatusAndDetail(
@@ -33,7 +37,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(CommonException.class)
-    public ResponseEntity<Object> handelCommonError(CommonException ex) {
+    public ResponseEntity<Object> handelCommonError(CommonException ex, WebRequest request) {
 
         HttpStatus httpStatus = ex.getErrorCode();
 
@@ -45,7 +49,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<Object> handleCustomException(IllegalArgumentException ex) {
+    public ResponseEntity<Object> handleCustomException(IllegalArgumentException ex, WebRequest request) {
 
         HttpStatus statusCode = HttpStatus.BAD_REQUEST;
         CustomProblemDetail body = CustomProblemDetail.forStatusAndDetail(
@@ -55,9 +59,10 @@ public class GlobalExceptionHandler {
                 ex, body, new HttpHeaders(), statusCode);
     }
 
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<Object> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
-
+    @Override
+    protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
+                                                                  HttpHeaders headers, HttpStatusCode status,
+                                                                  WebRequest request) {
         HttpStatus statusCode = HttpStatus.BAD_REQUEST;
         CustomProblemDetail body = CustomProblemDetail.forStatusAndDetail(
                 statusCode, Objects.requireNonNull(ex.getBindingResult().getFieldError()).getDefaultMessage());
@@ -65,9 +70,19 @@ public class GlobalExceptionHandler {
                 ex, body, new HttpHeaders(), statusCode);
     }
 
+//    @ExceptionHandler(MethodArgumentNotValidException.class)
+//    public ResponseEntity<Object> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
+//
+//        HttpStatus statusCode = HttpStatus.BAD_REQUEST;
+//        CustomProblemDetail body = CustomProblemDetail.forStatusAndDetail(
+//                statusCode, Objects.requireNonNull(ex.getBindingResult().getFieldError()).getDefaultMessage());
+//        return handleExceptionInternal(
+//                ex, body, new HttpHeaders(), statusCode);
+//    }
+
     @ExceptionHandler(AuthenticationException.class)
     public ResponseEntity<Object> handleAuthenticationException(
-            AuthenticationException ex) {
+            AuthenticationException ex, HttpServletRequest request) {
 
         HttpStatus statusCode = HttpStatus.UNAUTHORIZED;
         CustomProblemDetail body = CustomProblemDetail.forStatusAndDetail(
@@ -79,7 +94,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Object> handleUnclassifiedException(
-            Exception ex) {
+            Exception ex, HttpServletRequest request) {
 
         HttpStatus statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
         CustomProblemDetail body = CustomProblemDetail.forStatusAndDetail(

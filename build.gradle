@@ -57,6 +57,10 @@ dependencies {
 	// jackson
 	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
 
+	// Slack
+	implementation 'net.gpedro.integrations.slack:slack-webhook:1.4.0'
+	implementation 'com.slack.api:slack-api-client:1.40.3'
+
 }
 
 def generatedDir =  "src/main/generated"

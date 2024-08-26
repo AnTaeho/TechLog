@@ -1,6 +1,8 @@
 package com.example.techlog.error;
 
 import com.example.techlog.common.dto.CustomProblemDetail;
+import com.example.techlog.error.custom.CommonException;
+import com.example.techlog.error.custom.CriticalException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -17,6 +19,30 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    @ExceptionHandler(CriticalException.class)
+    public ResponseEntity<Object> handelCriticalError(CriticalException ex) {
+
+        HttpStatus httpStatus = ex.getErrorCode();
+
+        CustomProblemDetail body = CustomProblemDetail.forStatusAndDetail(
+                httpStatus, ex.getMessage() != null ? ex.getMessage() : "중요한 예외 입니다.");
+
+        return handleExceptionInternal(
+                ex, body, new HttpHeaders(), httpStatus);
+    }
+
+    @ExceptionHandler(CommonException.class)
+    public ResponseEntity<Object> handelCommonError(CommonException ex) {
+
+        HttpStatus httpStatus = ex.getErrorCode();
+
+        CustomProblemDetail body = CustomProblemDetail.forStatusAndDetail(
+                httpStatus, ex.getMessage() != null ? ex.getMessage() : "일반적인 예외 입니다.");
+
+        return handleExceptionInternal(
+                ex, body, new HttpHeaders(), httpStatus);
+    }
 
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<Object> handleCustomException(IllegalArgumentException ex) {

@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -30,12 +31,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Slf4j
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class PostService {
 
     private static final String MAIN_PAGE_CACHE_KEY = "main_page_posts";
-    private static final long CACHE_EXPIRATION = 60;
+    private static final long CACHE_EXPIRATION = 3600;
 
     private final RedisTemplate<String, Object> redisTemplate;
 
@@ -58,7 +60,7 @@ public class PostService {
         Post savedPost = postRepository.save(post);
         publisher.publishEvent(new ImageSaveEvent(postWriteRequest.urls(), savedPost.getId()));
         processingTags(postWriteRequest.tags(), user, savedPost);
-        redisTemplate.delete(MAIN_PAGE_CACHE_KEY);
+        clearCache();
         return new PostIdResponse(savedPost.getId());
     }
 
@@ -78,31 +80,32 @@ public class PostService {
     }
 
     public Page<PostSimpleResponse> findAllPost(Pageable pageable) {
-        if (pageable.getPageNumber() == 0) {
-            RestPage<PostSimpleResponse> cachedPosts = (RestPage<PostSimpleResponse>) redisTemplate.opsForValue().get(MAIN_PAGE_CACHE_KEY);
-
-            if (cachedPosts != null) {
-                System.out.println("Using cached data");
-                return cachedPosts;
-            }
-            RestPage<PostSimpleResponse> postPageWithWriterPage = postRepository.getPostPageWithWriterPage(pageable);
-            redisTemplate.opsForValue().set(MAIN_PAGE_CACHE_KEY, postPageWithWriterPage, CACHE_EXPIRATION, TimeUnit.SECONDS);
-
-            return postPageWithWriterPage;
-        } else {
+        if (pageable.getPageNumber() != 0) {
             return postRepository.getPostPageWithWriterPage(pageable);
         }
+
+        RestPage<PostSimpleResponse> cachedPosts = (RestPage<PostSimpleResponse>) redisTemplate.opsForValue().get(MAIN_PAGE_CACHE_KEY);
+        if (cachedPosts != null) {
+            log.info("Using cached data");
+            return cachedPosts;
+        }
+
+        RestPage<PostSimpleResponse> postPageWithWriterPage = postRepository.getPostPageWithWriterPage(pageable);
+        redisTemplate.opsForValue().set(MAIN_PAGE_CACHE_KEY, postPageWithWriterPage, CACHE_EXPIRATION, TimeUnit.SECONDS);
+        return postPageWithWriterPage;
     }
+
 
     @Transactional
     public PostIdResponse updatePost(Long postId, PostUpdateRequest postUpdateRequest, String userName) {
         Post post = getPost(postId);
         User user = getUser(userName);
         post.update(postUpdateRequest);
+
         publisher.publishEvent(new ImageSaveEvent(postUpdateRequest.newUrls(), post.getId()));
         postTagRepository.deleteAllByPost(postId);
         processingTags(postUpdateRequest.tags(), user, post);
-        redisTemplate.delete(MAIN_PAGE_CACHE_KEY);
+        clearCache();
         return new PostIdResponse(post.getId());
     }
 
@@ -111,7 +114,15 @@ public class PostService {
         Post post = getPost(postId);
         postTagRepository.deleteAllByPost(post.getId());
         postRepository.delete(post);
-        redisTemplate.delete(MAIN_PAGE_CACHE_KEY);
+        clearCache();
+    }
+
+    public Page<PostSimpleResponse> findAllByIds(List<Long> ids, Pageable pageable) {
+        if (ids.isEmpty()) {
+            return new PageImpl<>(new ArrayList<>(), pageable, 0L);
+        }
+
+        return postRepository.searchByIds(ids, pageable);
     }
 
     private User getUser(String email) {
@@ -124,11 +135,7 @@ public class PostService {
                 .orElseThrow(() -> new IllegalArgumentException("해당 포스트를 찾을 수 없습니다."));
     }
 
-    public Page<PostSimpleResponse> findAllByIds(List<Long> ids, Pageable pageable) {
-        if (ids.isEmpty()) {
-            return new PageImpl<>(new ArrayList<>(), pageable, 0L);
-        }
-
-        return postRepository.searchByIds(ids, pageable);
+    private void clearCache() {
+        redisTemplate.delete(MAIN_PAGE_CACHE_KEY);
     }
 }

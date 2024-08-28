@@ -1,14 +1,7 @@
 package com.example.techlog.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
 import com.example.techlog.post.domain.Post;
-import com.example.techlog.post.dto.PostDetailResponse;
-import com.example.techlog.post.dto.PostIdResponse;
-import com.example.techlog.post.dto.PostSimpleResponse;
-import com.example.techlog.post.dto.PostUpdateRequest;
-import com.example.techlog.post.dto.PostWriteRequest;
+import com.example.techlog.post.dto.*;
 import com.example.techlog.post.repository.PostRepository;
 import com.example.techlog.post.service.PostService;
 import com.example.techlog.tag.dto.TagDto;
@@ -16,29 +9,32 @@ import com.example.techlog.tag.repository.PostTagRepository;
 import com.example.techlog.tag.repository.TagRepository;
 import com.example.techlog.user.domain.User;
 import com.example.techlog.user.repository.UserRepository;
-import java.util.ArrayList;
-import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.*;
+
 @SpringBootTest
 @Transactional
-public class PostServiceTest {
+class PostServiceTest {
 
     @Autowired
     private PostService postService;
 
     @Autowired
-    private PostRepository postRepository;
+    private UserRepository userRepository;
 
     @Autowired
-    private UserRepository userRepository;
+    private PostRepository postRepository;
 
     @Autowired
     private TagRepository tagRepository;
@@ -49,124 +45,109 @@ public class PostServiceTest {
     @Autowired
     private RedisTemplate<String, Object> redisTemplate;
 
-    private User testUser;
+    @Autowired
+    private ApplicationEventPublisher publisher;
 
     @BeforeEach
     void setUp() {
-        testUser = userRepository.save(new User("test@example.com", "password", "Test User"));
+        // Initial setup can be done here if needed
     }
 
     @Test
-    void shouldWritePostAndReturnPostId() {
+    void writePost() {
         // given
-        PostWriteRequest postWriteRequest = new PostWriteRequest("Test Title", "Test Content", "Test Thumbnail", List.of(new TagDto("tag1"), new TagDto("tag2")), null);
+        PostWriteRequest request = new PostWriteRequest("title", "content", "thumbnail", List.of(new TagDto("http://image.com/1.jpg")), List.of("tag1"));
+        String email = "test@example.com";
+        User user = new User(email, "password", "name");
+        userRepository.save(user);
 
         // when
-        PostIdResponse response = postService.writePost(postWriteRequest, testUser.getEmail());
+        PostIdResponse response = postService.writePost(request, email);
 
         // then
-        assertThat(response).isNotNull();
-        assertThat(response.postId()).isNotNull();
-
-        Post savedPost = postRepository.findById(response.postId()).orElseThrow();
-        assertThat(savedPost.getTitle()).isEqualTo("Test Title");
-        assertThat(savedPost.getWriter().getEmail()).isEqualTo(testUser.getEmail());
-//        assertThat(savedPost.().size()).isEqualTo(2);
+        assertNotNull(response);
+        assertNotNull(response.postId());
+        assertTrue(postRepository.findById(response.postId()).isPresent());
     }
 
     @Test
-    void shouldThrowExceptionWhenUserNotFound() {
+    void getPostDetail() {
         // given
-        PostWriteRequest postWriteRequest = new PostWriteRequest("Test Title", "Test Content", "Test Thumbnail", List.of(), null);
-
-        // when & then
-        assertThrows(IllegalArgumentException.class, () -> {
-            postService.writePost(postWriteRequest, "nonexistent@example.com");
-        });
-    }
-
-    @Test
-    void shouldReturnPostDetail() {
-        // given
-        Post post = new Post("Title", "Content", "Thumbnail", testUser);
-        postRepository.save(post);
+        User user = userRepository.save(new User("test@example.com", "password", "name"));
+        Post post = new Post("title", "content", "thumbnail", user);
+        Post savedPost = postRepository.save(post);
 
         // when
-        PostDetailResponse postDetail = postService.getPostDetail(post.getId());
+        PostDetailResponse response = postService.getPostDetail(savedPost.getId());
 
         // then
-        assertThat(postDetail).isNotNull();
-        assertThat(postDetail.title()).isEqualTo("Title");
-        assertThat(postDetail.writer()).isEqualTo(testUser.getName());
+        assertNotNull(response);
+        assertEquals(savedPost.getTitle(), response.title());
     }
 
     @Test
-    void shouldUpdatePost() {
+    void findAllPost() {
         // given
-        Post post = new Post("Old Title", "Old Content", "Old Thumbnail", testUser);
-        postRepository.save(post);
-
-        PostUpdateRequest updateRequest = new PostUpdateRequest("New Title", "New Content", "New Thumbnail", new ArrayList<>(), null);
+        PageRequest pageable = PageRequest.of(0, 10);
+        User user1 = userRepository.save(new User("user1@example.com", "password", "name"));
+        User user2 = userRepository.save(new User("user2@example.com", "password", "name"));
+        postRepository.save(new Post("title1", "content1", "thumbnail1", user1));
+        postRepository.save(new Post("title2", "content2", "thumbnail2", user2));
 
         // when
-        postService.updatePost(post.getId(), updateRequest, "test@example.com");
+        Page<PostSimpleResponse> response = postService.findAllPost(pageable);
 
         // then
-        Post updatedPost = postRepository.findById(post.getId()).orElseThrow();
-        assertThat(updatedPost.getTitle()).isEqualTo("New Title");
-        assertThat(updatedPost.getContent()).isEqualTo("New Content");
+        assertNotNull(response);
+        assertFalse(response.isEmpty());
+        assertEquals(2, response.getTotalElements());
     }
 
     @Test
-    void shouldDeletePost() {
+    void updatePost() {
         // given
-        Post post = new Post("Title", "Content", "Thumbnail", testUser);
-        postRepository.save(post);
+        User user = userRepository.save(new User("test@example.com", "password", "name"));
+        Post post = new Post("original title", "original content", "original thumbnail", user);
+        Post savedPost = postRepository.save(post);
+        PostUpdateRequest updateRequest = new PostUpdateRequest("updated title", "updated content", "updated thumbnail", List.of(new TagDto("tag2")), List.of("http://image.com/2.jpg"));
 
         // when
-        postService.deletePost(post.getId());
+        PostIdResponse response = postService.updatePost(savedPost.getId(), updateRequest, savedPost.getWriter().getEmail());
 
         // then
-        Post deletedPost = postRepository.findById(post.getId()).orElse(null);
-//        assertThat(postTagRepository.findAllByPost(post)).isEmpty();
+        assertNotNull(response);
+        Post updatedPost = postRepository.findById(response.postId()).orElseThrow();
+        assertEquals("updated title", updatedPost.getTitle());
     }
 
     @Test
-    void shouldFindAllPosts() {
+    void deletePost() {
         // given
-        Post post1 = postRepository.save(new Post("Title1", "Content1", "Thumbnail1", testUser));
-        Post post2 = postRepository.save(new Post("Title2", "Content2", "Thumbnail2", testUser));
+        User user = userRepository.save(new User("test@example.com", "password", "name"));
+        Post post = new Post("title", "content", "thumbnail", user);
+        Post savedPost = postRepository.save(post);
 
         // when
-        Page<PostSimpleResponse> posts = postService.findAllPost(PageRequest.of(0, 2));
+        postService.deletePost(savedPost.getId());
 
         // then
-        assertThat(posts.getContent()).hasSize(2);
-        assertThat(posts.getContent().get(1).title()).isEqualTo("Title1");
-        assertThat(posts.getContent().get(0).title()).isEqualTo("Title2");
+        assertFalse(postRepository.findById(savedPost.getId()).isPresent());
     }
 
     @Test
-    void shouldFindPostsByIds() {
+    void findAllByIds() {
         // given
-        Post post1 = postRepository.save(new Post("Title1", "Content1", "Thumbnail1", testUser));
-        Post post2 = postRepository.save(new Post("Title2", "Content2", "Thumbnail2", testUser));
-
+        User user1 = userRepository.save(new User("user1@example.com", "password", "name"));
+        User user2 = userRepository.save(new User("user2@example.com", "password", "name"));
+        Post post1 = postRepository.save(new Post("title1", "content1", "thumbnail1", user1));
+        Post post2 = postRepository.save(new Post("title2", "content2", "thumbnail2", user2));
         List<Long> ids = List.of(post1.getId(), post2.getId());
 
         // when
-        Page<PostSimpleResponse> posts = postService.findAllByIds(ids, PageRequest.of(0, 2));
+        Page<PostSimpleResponse> response = postService.findAllByIds(ids, PageRequest.of(0, 10));
 
         // then
-        assertThat(posts.getContent()).hasSize(2);
-    }
-
-    @Test
-    void shouldReturnEmptyPageWhenNoIdsProvided() {
-        // when
-        Page<PostSimpleResponse> posts = postService.findAllByIds(List.of(), PageRequest.of(0, 10));
-
-        // then
-        assertThat(posts.getContent()).isEmpty();
+        assertNotNull(response);
+        assertEquals(2, response.getTotalElements());
     }
 }

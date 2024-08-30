@@ -69,7 +69,7 @@ class UserControllerTest {
         // given
         LoginRequest loginRequest = new LoginRequest("test@example.com", "passwordpassword");
         UserEmailVO emailVO = new UserEmailVO("test@example.com");
-        TokenResponse tokenResponse = new TokenResponse("accessToken", "testRefreshToken", "name");
+        TokenResponse tokenResponse = new TokenResponse("accessToken", "testRefreshToken", "name", 1L);
         when(userService.login(any(LoginRequest.class))).thenReturn(emailVO);
         when(jwtService.toTokenResponse(anyString())).thenReturn(tokenResponse);
 
@@ -105,7 +105,7 @@ class UserControllerTest {
         // given
         String refreshToken = "testRefreshToken";
         UserEmailVO emailVO = new UserEmailVO("test@example.com");
-        TokenResponse tokenResponse = new TokenResponse("accessToken", "testRefreshToken", "name");
+        TokenResponse tokenResponse = new TokenResponse("accessToken", "testRefreshToken", "name", 1L);
         when(userService.reIssueToken(anyString())).thenReturn(emailVO);
         when(jwtService.toTokenResponse(anyString())).thenReturn(tokenResponse);
 

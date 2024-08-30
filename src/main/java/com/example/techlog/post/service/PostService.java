@@ -80,18 +80,19 @@ public class PostService {
     }
 
     public Page<PostSimpleResponse> findAllPost(Pageable pageable) {
-        if (pageable.getPageNumber() != 0) {
+        int pageNumber = pageable.getPageNumber();
+        if (pageNumber > 4) {
             return postRepository.getPostPageWithWriterPage(pageable);
         }
 
-        RestPage<PostSimpleResponse> cachedPosts = (RestPage<PostSimpleResponse>) redisTemplate.opsForValue().get(MAIN_PAGE_CACHE_KEY);
+        RestPage<PostSimpleResponse> cachedPosts = (RestPage<PostSimpleResponse>) redisTemplate.opsForValue().get(MAIN_PAGE_CACHE_KEY + pageNumber);
         if (cachedPosts != null) {
-            log.info("Using cached data");
+            log.info("Using cached data page: {}", pageNumber);
             return cachedPosts;
         }
 
         RestPage<PostSimpleResponse> postPageWithWriterPage = postRepository.getPostPageWithWriterPage(pageable);
-        redisTemplate.opsForValue().set(MAIN_PAGE_CACHE_KEY, postPageWithWriterPage, CACHE_EXPIRATION, TimeUnit.SECONDS);
+        redisTemplate.opsForValue().set(MAIN_PAGE_CACHE_KEY + pageNumber, postPageWithWriterPage, CACHE_EXPIRATION, TimeUnit.SECONDS);
         return postPageWithWriterPage;
     }
 

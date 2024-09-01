@@ -137,6 +137,10 @@ public class PostService {
     }
 
     private void clearCache() {
-        redisTemplate.delete(MAIN_PAGE_CACHE_KEY);
+        redisTemplate.delete(MAIN_PAGE_CACHE_KEY + 0);
+        redisTemplate.delete(MAIN_PAGE_CACHE_KEY + 1);
+        redisTemplate.delete(MAIN_PAGE_CACHE_KEY + 2);
+        redisTemplate.delete(MAIN_PAGE_CACHE_KEY + 3);
+        redisTemplate.delete(MAIN_PAGE_CACHE_KEY + 4);
     }
 }

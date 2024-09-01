@@ -28,8 +28,20 @@ server:
       enabled: true
   port: 8081
 
-#management:
-#  endpoints:
-#    web:
-#      exposure:
-#        include: "*"
+management:
+  endpoints:
+    enabled-by-default: false
+    web:
+      exposure:
+        include: "health, info, prometheus"
+    jmx:
+      exposure:
+        exclude: "*"
+
+  endpoint:
+    health:
+      enabled: true
+    info:
+      enabled: true
+    prometheus:
+      enabled: true

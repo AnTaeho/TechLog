@@ -38,4 +38,5 @@ out/
 
 ### Custom ###
 **/application-secret.yml
+**/application-ec2-dev.yml
 **/tomcat

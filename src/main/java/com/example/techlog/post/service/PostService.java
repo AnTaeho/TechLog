@@ -69,7 +69,7 @@ public class PostService {
             return;
         }
         for (TagDto dto : tags) {
-            Optional<Tag> byContent = tagRepository.findByContent(dto.content());
+            Optional<Tag> byContent = tagRepository.findByContent(dto.content(), user.getId());
             Tag tag = byContent.orElseGet(() -> tagRepository.save(new Tag(dto.content(), user)));
             postTagRepository.save(new PostTag(post, tag));
         }

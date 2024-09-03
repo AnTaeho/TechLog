@@ -89,5 +89,5 @@ jobs:
           script: |
             docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/tech-log:${{ steps.short_sha.outputs.sha_short }}
             docker tag ${{ secrets.DOCKER_HUB_USERNAME }}/tech-log:${{ steps.short_sha.outputs.sha_short }} tech-log
-            docker rm -f $(docker ps -qa)
+            docker rm -f tech-log || true
             docker run -d --name tech-log -e TZ=Asia/Seoul -e SPRING_PROFILES_ACTIVE=ec2-dev -p 8081:8081 ${{ secrets.DOCKER_HUB_USERNAME }}/tech-log:${{ steps.short_sha.outputs.sha_short }}

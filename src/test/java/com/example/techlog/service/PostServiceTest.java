@@ -128,7 +128,7 @@ class PostServiceTest {
         Post savedPost = postRepository.save(post);
 
         // when
-        postService.deletePost(savedPost.getId());
+        postService.deletePost(savedPost.getId(), "test@example.com");
 
         // then
         assertFalse(postRepository.findById(savedPost.getId()).isPresent());

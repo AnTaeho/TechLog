@@ -111,9 +111,17 @@ public class PostService {
     }
 
     @Transactional
-    public void deletePost(Long postId) {
+    public void deletePost(Long postId, String email) {
         Post post = getPost(postId);
+        List<Long> tagsOfPost = post.getPostTags().stream()
+                .map(it -> it.getTag().getId())
+                .toList();
+        User user = getUser(email);
         postTagRepository.deleteAllByPost(post.getId());
+        List<Long> remainingTagIds = userRepository.findRemainingTags(user.getId(), postId, tagsOfPost);
+        tagsOfPost.stream()
+                .filter(tagId -> !remainingTagIds.contains(tagId))
+                .forEach(tagRepository::deleteById);
         postRepository.delete(post);
         clearCache();
     }

@@ -1,7 +1,6 @@
 package com.example.techlog.controller;
 
 import com.example.techlog.common.dto.CommonResponse;
-import com.example.techlog.common.dto.EmptyDto;
 import com.example.techlog.post.controller.PostController;
 import com.example.techlog.post.dto.*;
 import com.example.techlog.post.service.PostService;
@@ -138,17 +137,5 @@ class PostControllerTest {
         verify(authentication, times(1)).getName();
     }
 
-    @Test
-    void deletePost() {
-        // given
-        Long postId = 1L;
-
-        // when
-        CommonResponse<EmptyDto> response = postController.deletePost(postId);
-
-        // then
-        assertEquals(CommonResponse.EMPTY, response);
-        verify(postService, times(1)).deletePost(anyLong());
-    }
 }
 

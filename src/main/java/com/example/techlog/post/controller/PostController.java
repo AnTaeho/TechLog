@@ -70,7 +70,7 @@ public class PostController {
 
     @DeleteMapping("/{postId}")
     public CommonResponse<EmptyDto> deletePost(@PathVariable("postId") Long postId) {
-        postService.deletePost(postId);
+        postService.deletePost(postId, getUserName());
         return CommonResponse.EMPTY;
     }
 

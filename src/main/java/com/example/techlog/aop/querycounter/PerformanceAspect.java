@@ -26,7 +26,6 @@ public class PerformanceAspect {
 
     @Around("performancePointcut()")
     public Object start (ProceedingJoinPoint point) throws Throwable {
-
         RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
         if (requestAttributes instanceof ServletRequestAttributes) {
             HttpServletRequest request = ((ServletRequestAttributes) requestAttributes).getRequest();

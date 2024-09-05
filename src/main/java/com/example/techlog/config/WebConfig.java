@@ -24,7 +24,7 @@ public class WebConfig implements WebMvcConfigurer {
                         .allowedOrigins("http://localhost:8080") // Vue 앱의 도메인
                         .allowedOrigins(EC2_URL_PORT)
                         .allowedOrigins(EC2_URL)
-                        .allowedOrigins("jobava.online")
+                        .allowedOrigins("http://jobava.online")
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "HEAD", "PATCH")
                         .allowCredentials(true);
             }

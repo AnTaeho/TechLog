@@ -1,6 +1,7 @@
 package com.example.techlog.post.service;
 
 import com.example.techlog.common.RestPage;
+import com.example.techlog.error.custom.CriticalException;
 import com.example.techlog.event.image.ImageSaveEvent;
 import com.example.techlog.post.domain.Post;
 import com.example.techlog.post.dto.PostDetailResponse;
@@ -27,6 +28,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -101,6 +103,11 @@ public class PostService {
     public PostIdResponse updatePost(Long postId, PostUpdateRequest postUpdateRequest, String userName) {
         Post post = getPost(postId);
         User user = getUser(userName);
+
+        if (!post.getWriter().getId().equals(user.getId())) {
+            throw new CriticalException(HttpStatus.INTERNAL_SERVER_ERROR, "허용되지 않은 사용자가 수정 요청을 했습니다.");
+        }
+
         post.update(postUpdateRequest);
 
         publisher.publishEvent(new ImageSaveEvent(postUpdateRequest.newUrls(), post.getId()));
@@ -113,10 +120,15 @@ public class PostService {
     @Transactional
     public void deletePost(Long postId, String email) {
         Post post = getPost(postId);
+        User user = getUser(email);
+
+        if (!post.getWriter().getId().equals(user.getId())) {
+            throw new CriticalException(HttpStatus.INTERNAL_SERVER_ERROR, "허용되지 않은 사용자가 수정 요청을 했습니다.");
+        }
+
         List<Long> tagsOfPost = post.getPostTags().stream()
                 .map(it -> it.getTag().getId())
                 .toList();
-        User user = getUser(email);
         postTagRepository.deleteAllByPost(post.getId());
         List<Long> remainingTagIds = userRepository.findRemainingTags(user.getId(), postId, tagsOfPost);
         tagsOfPost.stream()

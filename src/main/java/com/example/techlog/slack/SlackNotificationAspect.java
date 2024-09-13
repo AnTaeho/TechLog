@@ -65,12 +65,12 @@ public class SlackNotificationAspect {
         int minute = now.getMinute();
         slackMessage.setText(String.format(
                         """
-                        후-후- 당직사관이 전파한다. 현재시각 %d시 %d분 중대한 예외가 발생했다.
+                        후-후- 당직사관이 전파한다. 현재시각 %d시 %d분 중대에 중대한 예외가 발생했다.
                         각 분대별 1명씩 상황 파악해서 보고할 수 있도록.
                        
                         다시한번 전파한다.
                        
-                        현재시각 %d시 %d분 중대한 예외가 발생했다.
+                        현재시각 %d시 %d분 중대에 중대한 예외가 발생했다.
                         각 분대별 1명씩 상황 파악해서 보고할 수 있도록.
                        """,
                 time, minute, time, minute));

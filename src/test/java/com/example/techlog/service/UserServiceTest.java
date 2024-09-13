@@ -3,8 +3,8 @@ package com.example.techlog.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import com.example.techlog.redis.RefreshToken;
-import com.example.techlog.redis.RefreshTokenRepository;
+import com.example.techlog.refreshtoken.RefreshToken;
+import com.example.techlog.refreshtoken.RefreshTokenRepository;
 import com.example.techlog.user.domain.User;
 import com.example.techlog.user.dto.JoinRequest;
 import com.example.techlog.user.dto.LoginRequest;

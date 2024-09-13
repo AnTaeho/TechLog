@@ -1,4 +1,4 @@
-package com.example.techlog.redis;
+package com.example.techlog.refreshtoken;
 
 import java.util.Optional;
 import org.springframework.data.repository.CrudRepository;

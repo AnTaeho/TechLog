@@ -36,7 +36,6 @@ public class ImageSaveEventHandler {
         for (String url : event.values()) {
             try {
                 imageRepository.save(new Image(url, postId));
-                Thread.sleep(5000);
                 imageOutboxEventRepository.updateExecuted(url, postId);
             } catch (Exception e) {
                 log.warn(e.getMessage());

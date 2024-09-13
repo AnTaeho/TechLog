@@ -6,6 +6,7 @@ import com.example.techlog.tag.dto.TagCreateRequest;
 import com.example.techlog.tag.dto.TagIdResponse;
 import com.example.techlog.tag.dto.TagListResponse;
 import com.example.techlog.tag.service.TagService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -24,7 +25,7 @@ public class TagController {
     private final TagService tagService;
 
     @PostMapping
-    public CommonResponse<TagIdResponse> createTag(@RequestBody TagCreateRequest tagCreateRequest) {
+    public CommonResponse<TagIdResponse> createTag(@Valid @RequestBody TagCreateRequest tagCreateRequest) {
         return new CommonResponse<>(tagService.createTag(getUserName(), tagCreateRequest));
     }
 

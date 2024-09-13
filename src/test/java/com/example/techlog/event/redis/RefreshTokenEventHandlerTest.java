@@ -1,7 +1,9 @@
 package com.example.techlog.event.redis;
 
-import com.example.techlog.redis.RefreshToken;
-import com.example.techlog.redis.RefreshTokenRepository;
+import com.example.techlog.event.refreshtoken.RefreshTokenEvent;
+import com.example.techlog.event.refreshtoken.RefreshTokenEventHandler;
+import com.example.techlog.refreshtoken.RefreshToken;
+import com.example.techlog.refreshtoken.RefreshTokenRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -31,10 +33,10 @@ class RefreshTokenEventHandlerTest {
         // given
         String email = "test@example.com";
         String refreshToken = "testRefreshToken";
-        RedisEvent redisEvent = new RedisEvent(email, refreshToken);
+        RefreshTokenEvent refreshTokenEvent = new RefreshTokenEvent(email, refreshToken);
 
         // when
-        refreshTokenEventHandler.saveRefreshToken(redisEvent);
+        refreshTokenEventHandler.saveRefreshToken(refreshTokenEvent);
 
         // then
         ArgumentCaptor<RefreshToken> captor = ArgumentCaptor.forClass(RefreshToken.class);

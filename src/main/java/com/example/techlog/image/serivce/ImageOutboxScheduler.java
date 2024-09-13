@@ -14,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class ImageManager {
+public class ImageOutboxScheduler {
 
     private final ImageRepository imageRepository;
     private final ImageOutboxEventRepository imageOutboxEventRepository;

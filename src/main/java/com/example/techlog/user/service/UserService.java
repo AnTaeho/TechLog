@@ -1,7 +1,7 @@
 package com.example.techlog.user.service;
 
-import com.example.techlog.redis.RefreshToken;
-import com.example.techlog.redis.RefreshTokenRepository;
+import com.example.techlog.refreshtoken.RefreshToken;
+import com.example.techlog.refreshtoken.RefreshTokenRepository;
 import com.example.techlog.user.domain.User;
 import com.example.techlog.user.dto.JoinRequest;
 import com.example.techlog.user.dto.LoginRequest;
@@ -55,7 +55,6 @@ public class UserService {
 
     @Transactional
     public void logout(String email) {
-        System.out.println(email);
         refreshTokenRepository.deleteById(email);
     }
 }

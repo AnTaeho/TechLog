@@ -49,10 +49,10 @@ public class PostRepositoryCustomImpl implements PostRepositoryCustom {
                 .orderBy(post.id.desc())
                 .fetch();
 
-        long count = queryFactory
-                .select(post.id)
+        Long count = queryFactory
+                .select(post.count())
                 .from(post)
-                .fetch().size();
+                .fetchOne();
 
         List<PostSimpleResponse> result = posts.stream()
                 .map(this::toSimpleResponse)
@@ -98,17 +98,16 @@ public class PostRepositoryCustomImpl implements PostRepositoryCustom {
                 .orderBy(post.id.desc())
                 .fetch();
 
-        long total = queryFactory
-                .select(post.id)
+        Long count = queryFactory
+                .select(post.count())
                 .from(post)
-                .where(post.id.in(ids))
-                .fetch().size();
+                .fetchOne();
 
         List<PostSimpleResponse> result = posts.stream()
                 .map(this::toSimpleResponse)
                 .toList();
 
-        return new RestPage<>(new PageImpl<>(result, pageable, total));
+        return new RestPage<>(new PageImpl<>(result, pageable, count));
     }
 
     @Override
